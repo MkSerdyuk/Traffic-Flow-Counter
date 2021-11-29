@@ -7,47 +7,36 @@ const int nGenNumber = 7; //Максимальное количество пок
 const int nMaxFlow = 10; //Максимальное значение пропускной способности
 struct Vertex;
 struct Edge;
-typedef Vertex* pVertex;
-typedef Edge* pEdge;
 struct Edge //Ребро
 {
     int nFlow; //Максимальный транспортный поток
-    pVertex pStart, pEnd; //Указатели на начальную и конечную вершину
+    int nStartId; //Id конечной вершины
+    int nEndId; //Id стартовой вершины
 };
 struct Vertex //Вершина
 {
-    int nId;
-    Edge aLast[nMaxConnects]; //Ребра идущие к вершине
+    int nId; //Индивидуальный номер вершины
     Edge aNext[nMaxConnects]; //Ребра идущие от вершины
 };
-Vertex aGenerations[nGenNumber][nOneGenVertexes];
+Vertex aVertexes[nGenNumber][nOneGenVertexes]; //Массив хранящий все вершины
+int aLengths[nGenNumber]; //Количество вершин в каждом поколении
 int nIdCounter;
-pVertex ConnectVertex(Vertex vCurrent, int nGenCounter) //Соединяем вершину с дргуими
+void ConnectVertex(Vertex vCurrent, int nGenCounter) //Соединяем вершину с дргуими
 {
-    nIdCounter++;
-    if (nGenCounter <= nOneGenVertexes)
-    {
-        vCurrent.nId = nIdCounter;
-        for (int i = 0; i <= rand() % nMaxConnects; i++)
-        {
-            vCurrent.aNext[i].nFlow = rand() % (nMaxFlow + 1);
-            vCurrent.aNext[i].pStart = &vCurrent;
-            for (int j = 0; j <= nOneGenVertexes; j++)
-                if (rand() % 2 == 1)
-                {
 
-                }
-            vCurrent.aNext[i].pEnd = &(aGenerations[nGenCounter][rand() % nOneGenVertexes]);
-            *(vCurrent.aNext[i].pEnd)->aLast = vCurrent
-
-        }        
-    }
-    else
-        return nullptr;
 }
 void CreateNetwork() //Создание сети
 {
-   
+   for (int i1 = 0; i1 <= nGenNumber - 1; i1++)
+   {
+       int nVertexesLimit = 1 + rand() % (nOneGenVertexes - 1);
+       for (int i2 = 0; i2 <= nVertexesLimit; i2++)
+       {
+           nIdCounter++;
+           aVertexes[i1][i2].nId = nIdCounter;
+       }
+       aLengths[i1] = nVertexesLimit;
+   }
 }
 int main()
 {
