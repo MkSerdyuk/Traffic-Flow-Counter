@@ -1,6 +1,7 @@
 ﻿// Traffic-Flow-Counter.cpp : Этот файл содержит функцию "main". Здесь начинается и заканчивается выполнение программы.
 //Поколение - все вершины находящиеся на одном уровне (создано во избежание зацикливания генерируемой сети
 #include <iostream>
+#include <SFML/Graphics.hpp>
 const int nMaxConnects = 5; //Максимальное количесвто связей к и от вершины
 const int nOneGenVertexes = 5; //Количество вершин в поколении
 const int nGenNumber = 7; //Максимальное количество поколений
@@ -45,5 +46,5 @@ void CreateNetwork() //Создание сети
 int main()
 {
     CreateNetwork();
-    std::cout << "Сделано";
+    std::cout << "Done";
 }
