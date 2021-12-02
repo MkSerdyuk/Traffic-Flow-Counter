@@ -10,8 +10,7 @@ struct Edge;
 struct Edge //Ребро
 {
     int nFlow; //Максимальный транспортный поток
-    int nStartId; //Id конечной вершины
-    int nEndId; //Id стартовой вершины
+    int nEndId; //Id конечной вершины
 };
 struct Vertex //Вершина
 {
@@ -19,26 +18,32 @@ struct Vertex //Вершина
     Edge aNext[nMaxConnects]; //Ребра идущие от вершины
 };
 Vertex aVertexes[nGenNumber][nOneGenVertexes]; //Массив хранящий все вершины
-int aLengths[nGenNumber]; //Количество вершин в каждом поколении
 int nIdCounter;
-void ConnectVertex(Vertex vCurrent, int nGenCounter) //Соединяем вершину с дргуими
+void ConnectVertex(Vertex &vCurrent, int nNextGen) //Соединяем вершину с дргуими
 {
-
+    for (int i1 = 0; i1 <= 1 + rand() % (nMaxConnects - 1); i1++)
+    {
+        vCurrent.aNext[i1].nEndId = aVertexes[nNextGen - 1][rand() % nOneGenVertexes].nId;
+        vCurrent.aNext[i1].nFlow = 1 + rand() % nMaxFlow;
+    }
 }
 void CreateNetwork() //Создание сети
 {
-   for (int i1 = 0; i1 <= nGenNumber - 1; i1++)
+   for (int i1 = nGenNumber - 1; i1 >= 0; i1--)
    {
-       int nVertexesLimit = 1 + rand() % (nOneGenVertexes - 1);
-       for (int i2 = 0; i2 <= nVertexesLimit; i2++)
+       for (int i2 = 0; i2 <= nOneGenVertexes - 1; i2++)
        {
            nIdCounter++;
            aVertexes[i1][i2].nId = nIdCounter;
+           if (i1 < nGenNumber - 1)
+           {
+               ConnectVertex(aVertexes[i1][i2], i1+1);
+           }
        }
-       aLengths[i1] = nVertexesLimit;
    }
 }
 int main()
 {
-    std::cout << "Hello World!\n";
+    CreateNetwork();
+    std::cout << "Сделано";
 }
