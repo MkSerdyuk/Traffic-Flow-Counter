@@ -1,50 +1,69 @@
 ﻿// Traffic-Flow-Counter.cpp : Этот файл содержит функцию "main". Здесь начинается и заканчивается выполнение программы.
 //Поколение - все вершины находящиеся на одном уровне (создано во избежание зацикливания генерируемой сети
 #include <iostream>
-#include <SFML/Graphics.hpp>
+//#include <SFML/Graphics.hpp>
 const int nMaxConnects = 5; //Максимальное количесвто связей к и от вершины
-const int nOneGenVertexes = 5; //Количество вершин в поколении
+const int nOneGenNodes = 5; //Количество вершин в поколении
 const int nGenNumber = 7; //Максимальное количество поколений
 const int nMaxFlow = 10; //Максимальное значение пропускной способности
-struct Vertex;
+struct Node;
 struct Edge;
+int nIdCounter = 1;
+
 struct Edge //Ребро
 {
     int nFlow; //Максимальный транспортный поток
     int nEndId; //Id конечной вершины
 };
-struct Vertex //Вершина
+
+struct Node //Вершина
 {
     int nId; //Индивидуальный номер вершины
     Edge aNext[nMaxConnects]; //Ребра идущие от вершины
 };
-Vertex aVertexes[nGenNumber][nOneGenVertexes]; //Массив хранящий все вершины
-int nIdCounter;
-void ConnectVertex(Vertex &vCurrent, int nNextGen) //Соединяем вершину с дргуими
+
+Node First; //Исток
+Node aNodes[nGenNumber][nOneGenNodes]; //Массив хранящий все вершины
+Node Last; //Исход
+
+void ConnectNode(Node &vCurrent, int nNextGen) //Соединяем вершину с дргуими
 {
-    for (int i1 = 0; i1 <= 1 + rand() % (nMaxConnects - 1); i1++)
+    if (nNextGen <= nGenNumber)
     {
-        vCurrent.aNext[i1].nEndId = aVertexes[nNextGen - 1][rand() % nOneGenVertexes].nId;
-        vCurrent.aNext[i1].nFlow = 1 + rand() % nMaxFlow;
+    for (int i1 = 0; i1 <= nOneGenNodes - 1; i1++)
+    {
+        if (rand() % 2 == 1)
+        {
+            if (aNodes[nNextGen - 1][i1].nId != 0)
+            {
+                nIdCounter++;
+                aNodes[nNextGen - 1][i1].nId = nIdCounter;
+            }
+
+            vCurrent.aNext[i1].nEndId = aNodes[nNextGen - 1][i1].nId;
+            vCurrent.aNext[i1].nFlow = 1 + rand() % nMaxFlow;
+            ConnectNode(aNodes[nNextGen - 1][i1], nNextGen + 1);
+        }
+    }
     }
 }
+
 void CreateNetwork() //Создание сети
 {
-   for (int i1 = nGenNumber - 1; i1 >= 0; i1--)
-   {
-       for (int i2 = 0; i2 <= nOneGenVertexes - 1; i2++)
-       {
-           nIdCounter++;
-           aVertexes[i1][i2].nId = nIdCounter;
-           if (i1 < nGenNumber - 1)
-           {
-               ConnectVertex(aVertexes[i1][i2], i1+1);
-           }
-       }
-   }
+   First.nId = 1;
+   ConnectNode(First, 1);
+   nIdCounter++;
+   Last.nId = nIdCounter;
 }
+
+void drawNetwork() //Отрисовка сети
+{
+    //    sf::RenderWindow window(sf::VideoMode(200, 200), "SFML works!");
+}
+
 int main()
 {
     CreateNetwork();
+    drawNetwork();
     std::cout << "Done";
 }
