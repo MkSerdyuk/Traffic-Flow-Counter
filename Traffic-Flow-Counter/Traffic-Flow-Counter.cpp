@@ -21,9 +21,7 @@ struct Node //Вершина
     int aId[2]; //Индивидуальный номер вершины
     Edge aNext[nMaxConnects]; //Ребра идущие от вершины
 };
-Node First; //Исток
 Node aNodes[nGenNumber][nOneGenNodes]; //Массив хранящий все вершины
-Node Last; //Исход
 
 
 void ConnectNode(Node &vCurrent, int nNextGen) //Соединяем вершину с дргуими
@@ -47,13 +45,6 @@ void ConnectNode(Node &vCurrent, int nNextGen) //Соединяем вершин
         }
     }
 }
-void CreateNetwork() //Создание сети
-{
-   First.nId = 1;
-   ConnectNode(First, 1);
-   nIdCounter++;
-   Last.nId = nIdCounter;
-}
 
 void drawNetwork() //Отрисовка сети
 {
@@ -75,5 +66,4 @@ int main()
             aNodes[nGenNumber][i1].aId[1] = aNodes[nGenNumber + 1][0].aId[1];
         }
     }
-}
 }
