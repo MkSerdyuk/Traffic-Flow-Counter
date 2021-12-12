@@ -12,12 +12,13 @@ int nIdCounter = 1;
 struct Edge //Ребро
 {
     int nFlow; //Максимальный транспортный поток
-    int nEndId; //Id конечной вершины
+    int nFlowLeft; //Остаточный поток
+    int aEndId[nGenNumber + 2][nOneGenNodes]; //Id конечной вершины
 };
 
 struct Node //Вершина
 {
-    int nId; //Индивидуальный номер вершины
+    int aId[nGenNumber + 2][nOneGenNodes]; //Индивидуальный номер вершины
     Edge aNext[nMaxConnects]; //Ребра идущие от вершины
 };
 Node First; //Исток
