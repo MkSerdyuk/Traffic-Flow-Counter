@@ -1,34 +1,31 @@
 ﻿// Traffic-Flow-Counter.cpp : Этот файл содержит функцию "main". Здесь начинается и заканчивается выполнение программы.
 //Поколение - все вершины находящиеся на одном уровне (создано во избежание зацикливания генерируемой сети
 #include <iostream>
-extern "C"
-{
-int __declspec(dllexport) nMaxConnects = 5; //Максимальное количесвто связей к и от вершины
-int __declspec(dllexport) nOneGenNodes = 5; //Количество вершин в поколении
-int __declspec(dllexport) nGenNumber = 7; //Максимальное количество поколений
-int __declspec(dllexport) nMaxFlow = 10; //Максимальное значение пропускной способности
-struct __declspec(dllexport) Node;
-struct __declspec(dllexport) Edge;
-
-struct __declspec(dllexport) Edge //Ребро
+//#include <SFML/Graphics.hpp>
+const int nMaxConnects = 5; //Максимальное количесвто связей к и от вершины
+const int nOneGenNodes = 5; //Количество вершин в поколении
+const int nGenNumber = 7; //Максимальное количество поколений
+const int nMaxFlow = 10; //Максимальное значение пропускной способности
+struct Node;
+struct Edge;
+int nIdCounter = 1;
+struct Edge //Ребро
 {
     int nFlow; //Максимальный транспортный поток
-    int nFlowLeft; //Остаточный поток
-    int aEndId[2]; //Id конечной вершины
+    int nEndId; //Id конечной вершины
 };
 
-struct __declspec(dllexport) Node //Вершина
+struct Node //Вершина
 {
-    int aId[2]; //Индивидуальный номер вершины
-    int nMark[2]; //Метка источника потока для алгоритма Форда-Фалкерсона
-    int nMarkFlow; //Метка приходящего потока для алгоритма Форда-Фалкерсона
-    int nFlow; //Поток приходящий на вершину в данную Итерацию алгоритма Форда-Фалкерсона
+    int nId; //Индивидуальный номер вершины
     Edge aNext[nMaxConnects]; //Ребра идущие от вершины
 };
+Node First; //Исток
+Node aNodes[nGenNumber][nOneGenNodes]; //Массив хранящий все вершины
+Node Last; //Исход
 
-__declspec(dllexport) Node aNodes[nGenNumber + 2][nOneGenNodes]; //Массив хранящий все вершины
 
-void __declspec(dllexport) ConnectNode(Node &vCurrent, int nNextGen) //Соединяем вершину с дргуими
+void ConnectNode(Node &vCurrent, int nNextGen) //Соединяем вершину с дргуими
 {
     if (nNextGen <= nGenNumber + 1) {
         for (int i1 = 0; i1 <= nOneGenNodes - 1; i1++) {
@@ -51,6 +48,40 @@ void __declspec(dllexport) ConnectNode(Node &vCurrent, int nNextGen) //Соед�
 }
 
 void __declspec(dllexport) CreateNetwork() //Создание сети
+    if (nNextGen <= nGenNumber)
+    {
+    for (int i1 = 0; i1 <= nOneGenNodes - 1; i1++)
+    {
+        if (rand() % 2 == 1)
+        {
+            if (aNodes[nNextGen - 1][i1].nId != 0)
+            {
+                nIdCounter++;
+                aNodes[nNextGen - 1][i1].nId = nIdCounter;
+            }
+
+            vCurrent.aNext[i1].nEndId = aNodes[nNextGen - 1][i1].nId;
+            vCurrent.aNext[i1].nFlow = 1 + rand() % nMaxFlow;
+            ConnectNode(aNodes[nNextGen - 1][i1], nNextGen + 1);
+        }
+    }
+    }
+}
+
+void CreateNetwork() //Создание сети
+{
+   First.nId = 1;
+   ConnectNode(First, 1);
+   nIdCounter++;
+   Last.nId = nIdCounter;
+}
+
+void drawNetwork() //Отрисовка сети
+{
+    //    sf::RenderWindow window(sf::VideoMode(200, 200), "SFML works!");
+}
+
+int main()
 {
     aNodes[0][0].aId[0] = 1;
     aNodes[0][0].aId[1] = 1;
