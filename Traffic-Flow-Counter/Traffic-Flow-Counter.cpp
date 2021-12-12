@@ -64,8 +64,8 @@ int main()
 {
     aNodes[0][0].aId[0] = 1;
     aNodes[0][0].aId[1] = 1;
-    aNodes[0][0].nMark[0] = aNodes[0][0].aId[0];
-    aNodes[0][0].nMark[1] = aNodes[0][0].aId[1];
+   // aNodes[0][0].nMark[0] = aNodes[0][0].aId[0];
+   // aNodes[0][0].nMark[1] = aNodes[0][0].aId[1];
     ConnectNode(aNodes[0][0], 2);
     aNodes[nGenNumber + 1][0].aId[0] = nGenNumber + 2;
     aNodes[nGenNumber + 1][0].aId[1] = 1;
