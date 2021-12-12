@@ -13,12 +13,12 @@ struct Edge //Ребро
 {
     int nFlow; //Максимальный транспортный поток
     int nFlowLeft; //Остаточный поток
-    int aEndId[nGenNumber + 2][nOneGenNodes]; //Id конечной вершины
+    int aEndId[2]; //Id конечной вершины
 };
 
 struct Node //Вершина
 {
-    int aId[nGenNumber + 2][nOneGenNodes]; //Индивидуальный номер вершины
+    int aId[2]; //Индивидуальный номер вершины
     Edge aNext[nMaxConnects]; //Ребра идущие от вершины
 };
 Node First; //Исток
@@ -47,28 +47,6 @@ void ConnectNode(Node &vCurrent, int nNextGen) //Соединяем вершин
         }
     }
 }
-
-void __declspec(dllexport) CreateNetwork() //Создание сети
-    if (nNextGen <= nGenNumber)
-    {
-    for (int i1 = 0; i1 <= nOneGenNodes - 1; i1++)
-    {
-        if (rand() % 2 == 1)
-        {
-            if (aNodes[nNextGen - 1][i1].nId != 0)
-            {
-                nIdCounter++;
-                aNodes[nNextGen - 1][i1].nId = nIdCounter;
-            }
-
-            vCurrent.aNext[i1].nEndId = aNodes[nNextGen - 1][i1].nId;
-            vCurrent.aNext[i1].nFlow = 1 + rand() % nMaxFlow;
-            ConnectNode(aNodes[nNextGen - 1][i1], nNextGen + 1);
-        }
-    }
-    }
-}
-
 void CreateNetwork() //Создание сети
 {
    First.nId = 1;
