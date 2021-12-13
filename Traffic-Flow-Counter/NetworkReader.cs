@@ -68,8 +68,19 @@ namespace Traffic_Flow_Counter
             int intMaxGenerations = Convert.ToInt32(stringsDataSplit[0]);
             int intMaxNodesInGeneration = Convert.ToInt32(stringsDataSplit[1]);
             int intMaxEdges = Convert.ToInt32(stringsDataSplit[2]);
-            Node[,] aNetwork = new Node[intMaxEdges,intMaxNodesInGeneration];
-            string[] stringsCodeNodes = stringsDataSplit[3].Split(new char[] {'[', ']'});
+            string[] stringsCodedNodes = stringsDataSplit[3].Split(new char[] {'[', ']'});
+            Node[] nodesDecodedNodes = new Node[stringsCodedNodes.Length];
+            int intCounter = 0;
+            foreach (string stringCodedNode in stringsCodedNodes)
+            {
+                nodesDecodedNodes[intCounter] = MakeNode(stringCodedNode, intMaxEdges);
+                intCounter++;
+            }
+            Node[,] nodesNetwork = new Node[intMaxEdges,intMaxNodesInGeneration];
+            foreach (Node nodeNode in nodesDecodedNodes)
+            {
+                nodesNetwork[nodeNode.aId[0] - 1, nodeNode.aId[1] - 1] = nodeNode;
+            }
         }
         #endregion
     }
