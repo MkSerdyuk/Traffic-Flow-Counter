@@ -52,11 +52,12 @@ namespace Traffic_Flow_Counter
         
         #region Network Analize
         private Process _processNetwork = new Process();
-
+        
         private string ReadNetwotk()
         {
             _processNetwork.StartInfo.UseShellExecute = false;
             _processNetwork.StartInfo.RedirectStandardOutput = true;
+            _processNetwork.StartInfo.FileName = "Traffic-Flow-Counter.exe";
             _processNetwork.Start();
             return _processNetwork.StandardOutput.ReadToEnd();
         }
