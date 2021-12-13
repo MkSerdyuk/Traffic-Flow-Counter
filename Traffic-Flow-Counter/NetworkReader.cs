@@ -35,7 +35,7 @@ namespace Traffic_Flow_Counter
             string[] stringsData = nodeCodedNode.Split(new char[] {';'});
             Node nodeResult = new Node();
             nodeResult.aId = new int[2] {Convert.ToInt32(stringsData[0]), Convert.ToInt32(stringsData[1])};
-            string[] stringsCodedEdges = stringsData[3].Split(new char[':']);
+            string[] stringsCodedEdges = stringsData[3].Split(new char[] {'{', '}'});
             nodeResult.aNext = new Edge[intMaxEdges];
             for (int i = 0; i <= intMaxEdges - 1; i++)
             {
