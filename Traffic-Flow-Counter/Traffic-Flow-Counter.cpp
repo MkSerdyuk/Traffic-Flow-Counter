@@ -12,7 +12,7 @@ int nIdCounter = 1;
 struct Edge //Ребро
 {
     int nFlow; //Максимальный транспортный поток
-    int nFlowLeft; //Остаточный поток
+   // int nFlowLeft; //Остаточный поток
     int aEndId[2]; //Id конечной вершины
 };
 
@@ -39,7 +39,7 @@ void ConnectNode(Node &vCurrent, int nNextGen) //Соединяем вершин
                 vCurrent.aNext[i1].aEndId[0] = aNodes[nNextGen - 1][i1].aId[0];
                 vCurrent.aNext[i1].aEndId[1] = aNodes[nNextGen - 1][i1].aId[1];
                 vCurrent.aNext[i1].nFlow = 1 + rand() % nMaxFlow;
-                vCurrent.aNext[i1].nFlowLeft = vCurrent.aNext[i1].nFlow;
+               // vCurrent.aNext[i1].nFlowLeft = vCurrent.aNext[i1].nFlow;
                 ConnectNode(aNodes[nNextGen - 1][i1], nNextGen + 1);
             }
         }

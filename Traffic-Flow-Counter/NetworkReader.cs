@@ -8,22 +8,39 @@ namespace Traffic_Flow_Counter
         #region Network Parts
         struct Edge
         {
-            int nFlow; //Максимальный транспортный поток
-            static int[] aEndId = new int[2]; //Id конечной вершины
+            public int nFlow; //Максимальный транспортный поток
+            public int[] aEndId;//Id конечной вершины
         }
         
         struct Node
         {
-            static int[] aId = new int[2]; //Индивидуальный номер вершины
-            static Edge[] aNext; //Ребра идущие от вершины
+            public int[] aId;//Индивидуальный номер вершины
+            public static Edge[] aNext;//Ребра идущие от вершины
         }
         
+        #endregion
+        
+        #region Structure Construction
+
+        private Edge MakeEdge(string edgeCodedEdge)
+        {
+            string[] stringsData = edgeCodedEdge.Split(new char[] {','});
+            Edge edgeResult = new Edge();
+            edgeResult.nFlow = Convert.ToInt32(stringsData[0]);
+            edgeResult.aEndId = new int[2] {Convert.ToInt32(stringsData[1]),Convert.ToInt32(stringsData[2])};
+            return edgeResult;
+        }
+        private Node MakeNode(string codedNode)
+        {
+            
+        }
+
         #endregion
         
         #region Network Analize
         private Process _processNetwork = new Process();
 
-        private string readNetwotk()
+        private string ReadNetwotk()
         {
             _processNetwork.StartInfo.UseShellExecute = false;
             _processNetwork.StartInfo.RedirectStandardOutput = true;
@@ -31,12 +48,12 @@ namespace Traffic_Flow_Counter
             return _processNetwork.StandardOutput.ReadToEnd();
         }
 
-        private void analizeNetwork()
+        private void AnalizeNetwork()
         {
-            string sData = readNetwotk();
-            string[] sDataSplit = sData.Split(new char[] {'|'});
-            Node[,] aNetwork = new Node[Convert.ToInt32(sDataSplit[0]),Convert.ToInt32(sDataSplit[1])];
-            
+            string stringData = ReadNetwotk();
+            string[] stringsDataSplit = stringData.Split(new char[] {'|'});
+            Node[,] aNetwork = new Node[Convert.ToInt32(stringsDataSplit[0]),Convert.ToInt32(stringsDataSplit[1])];
+            string[] stringsCodeNodes = stringsDataSplit[2].Split(new char[] {'[', ']'});
         }
         #endregion
     }
