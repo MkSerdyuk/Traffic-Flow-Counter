@@ -5,14 +5,16 @@ namespace Traffic_Flow_Counter
 {
     public class NetworkReader
     {
+        public Node[] NodesNetwork;
+        
         #region Network Parts
-        struct Edge
+        public struct Edge
         {
             public int nFlow; //Максимальный транспортный поток
             public int[] aEndId;//Id конечной вершины
         }
         
-        struct Node
+        public struct Node
         {
             public int[] aId;//Индивидуальный номер вершины
             public Edge[] aNext;//Ребра идущие от вершины
@@ -27,22 +29,30 @@ namespace Traffic_Flow_Counter
             string[] stringsData = edgeCodedEdge.Split(new char[] {','});
             Edge edgeResult = new Edge();
             edgeResult.nFlow = Convert.ToInt32(stringsData[0]);
-            edgeResult.aEndId = new int[2] {Convert.ToInt32(stringsData[1]),Convert.ToInt32(stringsData[2])};
+            edgeResult.aEndId = new int[2];
+            edgeResult.aEndId[0] = Convert.ToInt32(stringsData[1]);
+            edgeResult.aEndId[1] = Convert.ToInt32(stringsData[2]);
             return edgeResult;
         }
         private Node MakeNode(string nodeCodedNode, int intMaxEdges)
         {
             string[] stringsData = nodeCodedNode.Split(new char[] {';'});
             Node nodeResult = new Node();
-            nodeResult.aId = new int[2] {Convert.ToInt32(stringsData[0]), Convert.ToInt32(stringsData[1])};
-            string[] stringsCodedEdges = stringsData[3].Split(new char[] {'{', '}'});
+            int x = Convert.ToInt32(stringsData[0]);
+            int y = Convert.ToInt32(stringsData[1]);
+            nodeResult.aId = new int[2];
+            nodeResult.aId[0] = x;
+            nodeResult.aId[1] = y;
+            string[] stringsCodedEdges = stringsData[2].Split(new char[] {'{', '}'});
             nodeResult.aNext = new Edge[intMaxEdges];
-            for (int i = 0; i <= intMaxEdges - 1; i++)
+            int intCounter = 0;
+            foreach (string stringCodedEdge in stringsCodedEdges)
             {
-                nodeResult.aNext[i] = new Edge();
-                if (i <= stringsCodedEdges.Length - 1)
+                if (stringCodedEdge != "")
                 {
-                    nodeResult.aNext[i] = MakeEdge(stringsCodedEdges[i]);
+                    nodeResult.aNext[intCounter] = new Edge();
+                    nodeResult.aNext[intCounter] = MakeEdge(stringCodedEdge);
+                    intCounter++;
                 }
             }
             return nodeResult;
@@ -55,32 +65,28 @@ namespace Traffic_Flow_Counter
         
         private string ReadNetwotk()
         {
-            _processNetwork.StartInfo.UseShellExecute = false;
-            _processNetwork.StartInfo.RedirectStandardOutput = true;
-            _processNetwork.StartInfo.FileName = "Traffic-Flow-Counter.exe";
-            _processNetwork.Start();
-            return _processNetwork.StandardOutput.ReadToEnd();
+          _processNetwork.StartInfo.UseShellExecute = false;
+          _processNetwork.StartInfo.RedirectStandardOutput = true;
+          _processNetwork.StartInfo.FileName = "C:\\Git\\Traffic-Flow-Counter\\Traffic-Flow-Counter\\cmake-build-debug\\Traffic_Flow_Counter_script.exe";
+          _processNetwork.Start();
+          return _processNetwork.StandardOutput.ReadToEnd();
         }
 
-        private void AnalizeNetwork()
+        public void AnalizeNetwork()
         {
             string stringData = ReadNetwotk();
-            string[] stringsDataSplit = stringData.Split(new char[] {'|'});
-            int intMaxGenerations = Convert.ToInt32(stringsDataSplit[0]);
-            int intMaxNodesInGeneration = Convert.ToInt32(stringsDataSplit[1]);
-            int intMaxEdges = Convert.ToInt32(stringsDataSplit[2]);
-            string[] stringsCodedNodes = stringsDataSplit[3].Split(new char[] {'[', ']'});
-            Node[] nodesDecodedNodes = new Node[stringsCodedNodes.Length];
+            string[] stringsDataSplit = stringData.Split('|');
+            int intMaxEdges = Convert.ToInt32(stringsDataSplit[0]);
+            string[] stringsCodedNodes = stringsDataSplit[1].Split(new char[] {'[', ']'});
+            NodesNetwork = new Node[stringsCodedNodes.Length];
             int intCounter = 0;
             foreach (string stringCodedNode in stringsCodedNodes)
             {
-                nodesDecodedNodes[intCounter] = MakeNode(stringCodedNode, intMaxEdges);
-                intCounter++;
-            }
-            Node[,] nodesNetwork = new Node[intMaxEdges,intMaxNodesInGeneration];
-            foreach (Node nodeNode in nodesDecodedNodes)
-            {
-                nodesNetwork[nodeNode.aId[0] - 1, nodeNode.aId[1] - 1] = nodeNode;
+                if (stringCodedNode != "")
+                {
+                    NodesNetwork[intCounter] = MakeNode(stringCodedNode, intMaxEdges);
+                    intCounter++;
+                }
             }
         }
         #endregion

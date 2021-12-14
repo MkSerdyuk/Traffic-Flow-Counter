@@ -3,8 +3,8 @@
 #include <iostream>
 //#include <SFML/Graphics.hpp>
 const int nMaxConnects = 5; //Максимальное количесвто связей к и от вершины
-const int nOneGenNodes = 5; //Количество вершин в поколении
-const int nGenNumber = 7; //Максимальное количество поколений
+const int nOneGenNodes = 3; //Количество вершин в поколении
+const int nGenNumber = 6; //Максимальное количество поколений
 const int nMaxFlow = 10; //Максимальное значение пропускной способности
 struct Node;
 struct Edge;
@@ -29,19 +29,18 @@ void ConnectNode(Node &vCurrent, int nNextGen) //Соединяем вершин
     int nCounter = 0;
     if (nNextGen <= nGenNumber + 1) {
         for (int i1 = 0; i1 <= nOneGenNodes - 1; i1++) {
-            if (/*rand() % 10 != 0 &&*/ nCounter <= nMaxConnects - 1) {
-                nCounter++;
+            if ((rand() % 5 != 3 && rand() % 5 != 2) && nCounter <= nMaxConnects - 1) {
                 if (aNodes[nNextGen - 1][i1].aId[0] == 0) {
 
                     aNodes[nNextGen - 1][i1].aId[0] = nNextGen;
                     aNodes[nNextGen - 1][i1].aId[1] = i1 + 1;
-
                 }
                 vCurrent.aNext[nCounter].aEndId[0] = aNodes[nNextGen - 1][i1].aId[0];
                 vCurrent.aNext[nCounter].aEndId[1] = aNodes[nNextGen - 1][i1].aId[1];
                 vCurrent.aNext[nCounter].nFlow = 1 + rand() % nMaxFlow;
                // vCurrent.aNext[i1].nFlowLeft = vCurrent.aNext[i1].nFlow;
                 ConnectNode(aNodes[nNextGen - 1][i1], nNextGen + 1);
+                nCounter++;
             }
         }
     }
@@ -62,7 +61,7 @@ void OutputEdge(Edge eEdge)
 
 void OutputEdges(Edge eEdges[])
 {
-    for (int i = 0; i <= nMaxConnects; i++)
+    for (int i = 0; i <= nMaxConnects - 1; i++)
     {
         if (eEdges[i].nFlow != 0)
         {
@@ -99,10 +98,6 @@ void OutputNodes()
 
 void Output() //Вывод сети для отрисовки
 {
-    std::cout << nGenNumber;
-    std::cout << '|';
-    std::cout << nOneGenNodes;
-    std::cout << '|';
     std::cout << nMaxConnects;
     std::cout << '|';
     OutputNodes();
