@@ -67,7 +67,7 @@ namespace Traffic_Flow_Counter
         {
           _processNetwork.StartInfo.UseShellExecute = false;
           _processNetwork.StartInfo.RedirectStandardOutput = true;
-          _processNetwork.StartInfo.FileName = "C:\\Git\\Traffic-Flow-Counter\\Traffic-Flow-Counter\\cmake-build-debug\\Traffic_Flow_Counter_script.exe";
+          _processNetwork.StartInfo.FileName = "Traffic_Flow_Counter_script.exe";
           _processNetwork.Start();
           return _processNetwork.StandardOutput.ReadToEnd();
         }

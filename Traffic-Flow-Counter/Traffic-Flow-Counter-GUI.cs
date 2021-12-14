@@ -22,8 +22,8 @@ namespace Traffic_Flow_Counter
 
         private void Form1_Paint(object sender, System.Windows.Forms.PaintEventArgs pe)
         {
-            int height = 75;
-            int width = 100;
+            int height = 50;
+            int width = 50;
             Graphics graphics = pe.Graphics;
             Pen pen = new Pen(Color.FromArgb(0, 0, 0));
             NetworkReader networkNetworkReader= new NetworkReader();
