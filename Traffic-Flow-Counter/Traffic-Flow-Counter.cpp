@@ -29,15 +29,14 @@ void ConnectNode(Node &vCurrent, int nNextGen) //Соединяем вершин
     int nCounter = 0;
     if (nNextGen <= nGenNumber + 1) {
         for (int i1 = 0; i1 <= nOneGenNodes - 1; i1++) {
-            if (rand() % 3 != 0 && nCounter <= nMaxConnects - 1) {
+            if (/*rand() % 10 != 0 &&*/ nCounter <= nMaxConnects - 1) {
                 nCounter++;
-                if (aNodes[nNextGen - 1][i1].aId == 0) {
+                if (aNodes[nNextGen - 1][i1].aId[0] == 0) {
 
                     aNodes[nNextGen - 1][i1].aId[0] = nNextGen;
                     aNodes[nNextGen - 1][i1].aId[1] = i1 + 1;
 
                 }
-
                 vCurrent.aNext[nCounter].aEndId[0] = aNodes[nNextGen - 1][i1].aId[0];
                 vCurrent.aNext[nCounter].aEndId[1] = aNodes[nNextGen - 1][i1].aId[1];
                 vCurrent.aNext[nCounter].nFlow = 1 + rand() % nMaxFlow;
@@ -50,11 +49,15 @@ void ConnectNode(Node &vCurrent, int nNextGen) //Соединяем вершин
 
 void OutputEdge(Edge eEdge)
 {
-    std::cout << eEdge.nFlow;
-    std::cout << ',';
-    std::cout << eEdge.aEndId[0];
-    std::cout << ',';
-    std::cout << eEdge.aEndId[1];
+    if (eEdge.aEndId[0] != 0) {
+        std::cout << '{';
+        std::cout << eEdge.nFlow;
+        std::cout << ',';
+        std::cout << eEdge.aEndId[0];
+        std::cout << ',';
+        std::cout << eEdge.aEndId[1];
+        std::cout << '}';
+    }
 }
 
 void OutputEdges(Edge eEdges[])
@@ -63,15 +66,14 @@ void OutputEdges(Edge eEdges[])
     {
         if (eEdges[i].nFlow != 0)
         {
-            std::cout << '{';
             OutputEdge(eEdges[i]);
-            std::cout << '}';
         }
     }
 }
 
 void OutputNode(Node nNode)
 {
+
     std::cout << nNode.aId[0];
     std::cout << ';';
     std::cout << nNode.aId[1];
@@ -113,14 +115,15 @@ int main()
    // aNodes[0][0].nMark[0] = aNodes[0][0].aId[0];
    // aNodes[0][0].nMark[1] = aNodes[0][0].aId[1];
     ConnectNode(aNodes[0][0], 2);
-    aNodes[nGenNumber + 1][0].aId[0] = nGenNumber + 1;
+    aNodes[nGenNumber + 1][0].aId[0] = nGenNumber + 2;
     aNodes[nGenNumber + 1][0].aId[1] = 1;
     for (int i1 = 0; i1 <= nOneGenNodes - 1; i1++)
     {
         if (aNodes[nGenNumber][i1].aId[0] != 0)
         {
-            aNodes[nGenNumber][i1].aId[0] = aNodes[nGenNumber + 1][0].aId[0];
-            aNodes[nGenNumber][i1].aId[1] = aNodes[nGenNumber + 1][0].aId[1];
+            aNodes[nGenNumber][i1].aNext->nFlow = 1 + rand() % nMaxFlow;
+            aNodes[nGenNumber][i1].aNext->aEndId[0] = aNodes[nGenNumber + 1][0].aId[0];
+            aNodes[nGenNumber][i1].aNext->aEndId[1] = aNodes[nGenNumber + 1][0].aId[1];
         }
     }
     Output();
