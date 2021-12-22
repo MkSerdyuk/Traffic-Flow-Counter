@@ -1,7 +1,7 @@
 ﻿// Traffic-Flow-Counter.cpp : Этот файл содержит функцию "main". Здесь начинается и заканчивается выполнение программы.
 //Поколение - все вершины находящиеся на одном уровне (создано во избежание зацикливания генерируемой сети
 #include <iostream>
-#include <vector>
+#include <deque>
 const int nMaxConnects = 3; //Максимальное количесвто связей к и от вершины
 const int nOneGenNodes = 4; //Количество вершин в поколении
 const int nGenNumber = 7; //Максимальное количество поколений
@@ -23,7 +23,7 @@ struct Node //Вершина
     Edge aNext[nMaxConnects]; //Ребра идущие от вершины
 };
 Node aNodes[nGenNumber + 2][nOneGenNodes]; //Массив хранящий все вершины
-std::vector<std::vector<int[2]>> Paths;
+std::deque<std::deque<std::deque<int>>> Paths(0, std::deque<std::deque<int>> (0, std::deque<int>(0)));
 
 void ConnectNode(Node &vCurrent, int nNextGen) //Соединяем вершину с дргуими
 {
@@ -99,6 +99,29 @@ void OutputNodes()
     }
 }
 
+std::deque<int> SetId(int aId[2])
+{
+    std::deque<int> result(0);
+    result.push_back(aId[0]);
+    result.push_back(aId[1]);
+    return result;
+}
+
+std::deque<std::deque<int>> CopyPath(std::deque<std::deque<int>> original)
+{
+    std::deque<std::deque<int>> result(0, std::deque<int>(0));
+    for (int i = 0; i < original.size(); i++)
+    {
+        result.push_back(original[i]);
+    }
+}
+
+int[2] GetId(std::deque<int> path, int number)
+{
+   return {path[number*2], path[number*2]+1};
+}
+
+
 void Output() //Вывод сети для отрисовки
 {
     std::cout << nMaxConnects;
@@ -108,10 +131,11 @@ void Output() //Вывод сети для отрисовки
     std::cout << FordFalkersonAlgorithm();
 }
 
- void FindPaths(std::vector<int[2]> &currentPath)
+ void FindPaths(std::deque<std::deque<int>> &currentPath)
 {
     int nConnectCounter = 0;
-    std::vector<int[2]> memorizedPath;
+
+    std::deque<std::deque<int>> memorizedPath (0, std::deque<int>(0));
     int l = currentPath.size() - 1;
     for (int i = 0; i < nMaxConnects; i++)
     {
@@ -120,15 +144,15 @@ void Output() //Вывод сети для отрисовки
             nConnectCounter++;
             if (nConnectCounter == 1)
             {
-                memorizedPath = currentPath;
-                currentPath.push_back(aNodes[currentPath[l][0]][currentPath[l][1]].aNext[i].aEndId);
+               // memorizedPath = currentPath;
+                //currentPath.push_back(aNodes[currentPath[l][0]][currentPath[l][1]].aNext[i].aEndId);
                 FindPaths(currentPath);
             }
             else
             {
-                Paths.push_back(memorizedPath);
-                Paths[Paths.size() - 1].push_back(aNodes[currentPath[l][0]][currentPath[l][1]].aNext[i].aEndId);
-                FindPaths(Paths[Paths.size() - 1]);
+               // Paths.push_back(memorizedPath);
+              //  Paths[Paths.size() - 1].push_back(aNodes[currentPath[l][0]][currentPath[l][1]].aNext[i].aEndId);
+           //     FindPaths(Paths[Paths.size() - 1]);
             }
         }
     }
