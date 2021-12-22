@@ -34,8 +34,8 @@ namespace Traffic_Flow_Counter
                 {
                     if (nodeNode.aId[0] != 0)
                     {
-                        graphics.DrawEllipse(pen, new Rectangle(nodeNode.aId[0]*width-10, nodeNode.aId[1]*height-10, 20, 20));
-                        graphics.DrawString(Convert.ToString(nodeNode.aId[0])+";"+Convert.ToString(nodeNode.aId[1]), new Font("Times New Roman", 12.0f), new SolidBrush(Color.Black), nodeNode.aId[0]*width-10, nodeNode.aId[1]*height-10);
+                        graphics.DrawEllipse(pen, new Rectangle(nodeNode.aId[0]*width-10, nodeNode.aId[1]*height-10, 25, 25));
+                        graphics.DrawString(Convert.ToString(nodeNode.aId[0])+";"+Convert.ToString(nodeNode.aId[1]), new Font("Times New Roman", 12.0f), new SolidBrush(Color.Black), nodeNode.aId[0]*width-10, nodeNode.aId[1]*height-7);
                         foreach (NetworkReader.Edge edgeEdge in nodeNode.aNext)
                         {
                             if (edgeEdge.aEndId != null)
