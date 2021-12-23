@@ -3,6 +3,7 @@
 #include <iostream>
 #include <deque>
 #include <cstdlib>
+#include <chrono>
 
 using namespace std;
 const int nMaxConnects = 3; //Максимальное количесвто связей к и от вершины
@@ -222,6 +223,7 @@ int main()
     first_path.push_back(SetId(aNodes[0][0].aId, 0));
     Paths.push_back(first_path);
     FindPaths(Paths[0]);
-    cout << '|' << FordFalkersonAlgorithm();
+    auto fStartTime = chrono::high_resolution_clock::now(); //ед. измерения - микросекунды
+    cout << '|' << FordFalkersonAlgorithm() << '|' << std::chrono::duration_cast<std::chrono::microseconds>( std::chrono::high_resolution_clock::now()- fStartTime ).count();
 
 }
