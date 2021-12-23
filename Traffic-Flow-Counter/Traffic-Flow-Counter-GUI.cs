@@ -1,14 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Diagnostics;
 using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
+
 using System.Windows.Forms;
 
 namespace Traffic_Flow_Counter
@@ -20,7 +12,7 @@ namespace Traffic_Flow_Counter
             InitializeComponent();
         }
 
-        private void Form1_Paint(object sender, System.Windows.Forms.PaintEventArgs pe)
+        private void Form1_Paint(object sender, PaintEventArgs pe)
         {
             int height = 50;
             int width = 50;
