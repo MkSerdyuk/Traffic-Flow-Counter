@@ -5,8 +5,8 @@
 
 using namespace std;
 const int nMaxConnects = 3; //Максимальное количесвто связей к и от вершины
-const int nOneGenNodes = 4; //Количество вершин в поколении
-const int nGenNumber = 7; //Максимальное количество поколений
+const int nOneGenNodes = 3; //Количество вершин в поколении
+const int nGenNumber = 3; //Максимальное количество поколений
 const int nMaxFlow = 10; //Максимальное значение пропускной способности
 struct Node;
 struct Edge;
@@ -41,7 +41,7 @@ void ConnectNode(Node &vCurrent, int nNextGen) //Соединяем вершин
                 vCurrent.aNext[nCounter].aEndId[0] = aNodes[nNextGen - 1][i1].aId[0];
                 vCurrent.aNext[nCounter].aEndId[1] = aNodes[nNextGen - 1][i1].aId[1];
                 vCurrent.aNext[nCounter].nFlow = 1 + rand() % nMaxFlow;
-                vCurrent.aNext[i1].nFlowLeft = vCurrent.aNext[i1].nFlow;
+                vCurrent.aNext[nCounter].nFlowLeft = vCurrent.aNext[nCounter].nFlow;
                 ConnectNode(aNodes[nNextGen - 1][i1], nNextGen + 1);
                 nCounter++;
             }
@@ -101,11 +101,21 @@ void OutputNodes()
     }
 }
 
-deque<int> SetId(int aId[2])
+void Output() //Вывод сети для отрисовки
+{
+    cout << nMaxConnects;
+    cout << '|';
+    OutputNodes();
+    //cout << '|';
+    //cout << FordFalkersonAlgorithm();
+}
+
+deque<int> SetId(int aId[2], int nEdgeNum)
 {
     deque<int> result(0);
     result.push_back(aId[0]);
     result.push_back(aId[1]);
+    result.push_back(nEdgeNum);
     return result;
 }
 
@@ -116,15 +126,6 @@ void CopyPath(deque<deque<int>> original, deque<deque<int>> &copy)
         copy.push_back(original[i]);
     }
 
-}
-
-void Output() //Вывод сети для отрисовки
-{
-    cout << nMaxConnects;
-    cout << '|';
-    OutputNodes();
-    cout << '|';
-    cout << FordFalkersonAlgorithm();
 }
 
  void FindPaths(deque<deque<int>> &currentPath)
@@ -141,22 +142,60 @@ void Output() //Вывод сети для отрисовки
             if (nConnectCounter == 1)
             {
                 CopyPath(currentPath,memorizedPath);
-                currentPath.push_back(SetId(aNodes[currentPath[length][0] - 1][currentPath[length][1] - 1].aNext[i].aEndId));
+                currentPath.push_back(SetId(aNodes[currentPath[length][0] - 1][currentPath[length][1] - 1].aNext[i].aEndId, i));
                 FindPaths(currentPath);
             }
             else
             {
                 Paths.push_back(memorizedPath);
-                Paths[Paths.size() - 1].push_back(SetId(aNodes[currentPath[length][0] - 1][currentPath[length][1] - 1].aNext[i].aEndId));
+                Paths[Paths.size() - 1].push_back(SetId(aNodes[currentPath[length][0] - 1][currentPath[length][1] - 1].aNext[i].aEndId, i));
                 FindPaths(Paths[Paths.size() - 1]);
             }
+        }
+    }
+
+}
+
+bool IsIncreasing(deque<deque<int>> currentPath) //проверка,  на увеличивающий путь
+{
+    bool result = true;
+    for (int i = 0; i < currentPath.size() - 1; i++)
+    {
+        if (aNodes[currentPath[i][0] - 1][currentPath[i][1] - 1].aNext[currentPath[i+1][2]].nFlowLeft == 0)
+        {
+            result = false;
+            break;
+        }
+    }
+    return result;
+}
+
+void IncreaseFlow(deque<deque<int>> &currentPath)
+{
+    while (IsIncreasing(currentPath))
+    {
+        for (int i = 0; i < currentPath.size() - 1; i++)
+        {
+            aNodes[currentPath[i][0] - 1][currentPath[i][1] - 1].aNext[0].nFlowLeft--;
         }
     }
 }
 
 int FordFalkersonAlgorithm()
 {
-        return 0;
+    int result = 0;
+    for (int i = 0; i < Paths.size(); i++)
+    {
+        IncreaseFlow(Paths[i]);
+    }
+    for (int i1 = 0; i1 < nOneGenNodes; i1++)
+    {
+        for (int i2 = 0; i2 < nMaxConnects; i2++)
+        {
+            result = result + aNodes[nGenNumber][i1].aNext[i2].nFlow - aNodes[nGenNumber][i1].aNext[i2].nFlowLeft;
+        }
+    }
+    return result;
 }
 
 int main()
@@ -171,16 +210,20 @@ int main()
     aNodes[nGenNumber + 1][0].aId[1] = 1;
     for (int i1 = 0; i1 <= nOneGenNodes - 1; i1++)
     {
+        aNodes[nGenNumber][i1].aNext[0].nFlowLeft = 0;
         if (aNodes[nGenNumber][i1].aId[0] != 0)
         {
             aNodes[nGenNumber][i1].aNext[0].nFlow = 1 + rand() % nMaxFlow;
+            aNodes[nGenNumber][i1].aNext[0].nFlowLeft = aNodes[nGenNumber][i1].aNext[0].nFlow;
             aNodes[nGenNumber][i1].aNext[0].aEndId[0] = aNodes[nGenNumber + 1][0].aId[0];
             aNodes[nGenNumber][i1].aNext[0].aEndId[1] = aNodes[nGenNumber + 1][0].aId[1];
         }
     }
     Output();
     deque<deque<int>> first_path(0, deque<int>(0));
-    first_path.push_back(SetId(aNodes[0][0].aId));
+    first_path.push_back(SetId(aNodes[0][0].aId, 0));
     Paths.push_back(first_path);
     FindPaths(Paths[0]);
+    cout << '|' << FordFalkersonAlgorithm();
+
 }
