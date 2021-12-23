@@ -21,7 +21,6 @@ struct Edge //Ребро
 struct Node //Вершина
 {
     int aId[2]; //Индивидуальный номер вершины
-    int aMark[3]; //Метка для алгоритма Форда-Фалкерсона, первые 2 числа - источник потока в вершины, последнее число - количество потока
     Edge aNext[nMaxConnects]; //Ребра идущие от вершины
 };
 Node aNodes[nGenNumber + 2][nOneGenNodes]; //Массив хранящий все вершины
@@ -202,9 +201,6 @@ int main()
 {
     aNodes[0][0].aId[0] = 1;
     aNodes[0][0].aId[1] = 1;
-    aNodes[0][0].aMark[0] = 0;
-    aNodes[0][0].aMark[1] = 0;
-    aNodes[0][0].aMark[3] = 1000000; //вместо бесконечности
     ConnectNode(aNodes[0][0], 2);
     aNodes[nGenNumber + 1][0].aId[0] = nGenNumber + 2;
     aNodes[nGenNumber + 1][0].aId[1] = 1;
