@@ -12,11 +12,12 @@ namespace Traffic_Flow_Counter
             InitializeComponent();
         }
 
-        private void Form1_Paint(object sender, PaintEventArgs pe)
+        private void Draw_Network(object sender, EventArgs e)
         {
             int height = 50;
             int width = 50;
-            Graphics graphics = pe.Graphics;
+            Graphics graphics = pictureBox1.CreateGraphics();
+            graphics.Clear(Color.White);
             Pen pen = new Pen(Color.FromArgb(0, 0, 0));
             NetworkReader networkNetworkReader= new NetworkReader();
             networkNetworkReader.AnalizeNetwork();
