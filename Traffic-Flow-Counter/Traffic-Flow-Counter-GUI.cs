@@ -20,6 +20,7 @@ namespace Traffic_Flow_Counter
             Pen pen = new Pen(Color.FromArgb(0, 0, 0));
             NetworkReader networkNetworkReader= new NetworkReader();
             networkNetworkReader.AnalizeNetwork();
+            label5.Text = Convert.ToString(networkNetworkReader.AlgorithmResults[0]);
             foreach (NetworkReader.Node nodeNode in networkNetworkReader.NodesNetwork)
             {
                 if (nodeNode.aId != null)
@@ -40,5 +41,6 @@ namespace Traffic_Flow_Counter
                 }
             }
         }
+        
     }
 }

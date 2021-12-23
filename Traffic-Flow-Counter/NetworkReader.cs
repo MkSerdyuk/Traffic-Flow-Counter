@@ -6,6 +6,7 @@ namespace Traffic_Flow_Counter
     public class NetworkReader
     {
         public Node[] NodesNetwork;
+        public int[] AlgorithmResults;
         
         #region Network Parts
         public struct Edge
@@ -76,6 +77,8 @@ namespace Traffic_Flow_Counter
         {
             string stringData = ReadNetwotk();
             string[] stringsDataSplit = stringData.Split('|');
+            AlgorithmResults = new int[1];
+            AlgorithmResults[0] = Convert.ToInt32(stringsDataSplit[2]);
             int intMaxEdges = Convert.ToInt32(stringsDataSplit[0]);
             string[] stringsCodedNodes = stringsDataSplit[1].Split(new char[] {'[', ']'});
             NodesNetwork = new Node[stringsCodedNodes.Length];
