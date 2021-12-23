@@ -172,13 +172,13 @@ bool IsIncreasing(deque<deque<int>> currentPath) //проверка,  на ув�
     return result;
 }
 
-void IncreaseFlow(deque<deque<int>> &currentPath)
+void IncreaseFlow(deque<deque<int>> currentPath)
 {
     while (IsIncreasing(currentPath))
     {
         for (int i = 0; i < currentPath.size() - 1; i++)
         {
-            aNodes[currentPath[i][0] - 1][currentPath[i][1] - 1].aNext[0].nFlowLeft--;
+            aNodes[currentPath[i][0] - 1][currentPath[i][1] - 1].aNext[currentPath[i+1][2]].nFlowLeft--;
         }
     }
 }
@@ -225,5 +225,4 @@ int main()
     FindPaths(Paths[0]);
     auto fStartTime = chrono::high_resolution_clock::now(); //ед. измерения - микросекунды
     cout << '|' << FordFalkersonAlgorithm() << '|' << std::chrono::duration_cast<std::chrono::microseconds>( std::chrono::high_resolution_clock::now()- fStartTime ).count();
-
 }
