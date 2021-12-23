@@ -7,6 +7,7 @@ namespace Traffic_Flow_Counter
     {
         public Node[] NodesNetwork;
         public int[] AlgorithmResults;
+        public int[] TimeForAlgorithms;
         
         #region Network Parts
         public struct Edge
@@ -79,6 +80,8 @@ namespace Traffic_Flow_Counter
             string[] stringsDataSplit = stringData.Split('|');
             AlgorithmResults = new int[1];
             AlgorithmResults[0] = Convert.ToInt32(stringsDataSplit[2]);
+            TimeForAlgorithms = new int[1];
+            TimeForAlgorithms[0] = Convert.ToInt32(stringsDataSplit[3]);
             int intMaxEdges = Convert.ToInt32(stringsDataSplit[0]);
             string[] stringsCodedNodes = stringsDataSplit[1].Split(new char[] {'[', ']'});
             NodesNetwork = new Node[stringsCodedNodes.Length];

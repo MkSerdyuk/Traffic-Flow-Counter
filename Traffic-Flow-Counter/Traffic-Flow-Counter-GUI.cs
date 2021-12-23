@@ -22,6 +22,7 @@ namespace Traffic_Flow_Counter
             NetworkReader networkNetworkReader= new NetworkReader();
             networkNetworkReader.AnalizeNetwork();
             label5.Text = Convert.ToString(networkNetworkReader.AlgorithmResults[0]);
+            label6.Text = Convert.ToString(networkNetworkReader.TimeForAlgorithms[0]) + " мкс";
             foreach (NetworkReader.Node nodeNode in networkNetworkReader.NodesNetwork)
             {
                 if (nodeNode.aId != null)
