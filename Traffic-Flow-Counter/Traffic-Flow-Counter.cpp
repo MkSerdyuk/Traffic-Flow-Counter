@@ -2,12 +2,13 @@
 //Поколение - все вершины находящиеся на одном уровне (создано во избежание зацикливания генерируемой сети
 #include <iostream>
 #include <deque>
+#include <cstdlib>
 
 using namespace std;
 const int nMaxConnects = 3; //Максимальное количесвто связей к и от вершины
-const int nOneGenNodes = 3; //Количество вершин в поколении
-const int nGenNumber = 3; //Максимальное количество поколений
-const int nMaxFlow = 10; //Максимальное значение пропускной способности
+const int nOneGenNodes = 4; //Количество вершин в поколении
+const int nGenNumber = 6; //Максимальное количество поколений
+const int nMaxFlow = 20; //Максимальное значение пропускной способности
 struct Node;
 struct Edge;
 int nIdCounter = 1;
@@ -29,9 +30,10 @@ deque<deque<deque<int>>> Paths(0, deque<deque<int>> (0, deque<int>(0)));
 void ConnectNode(Node &vCurrent, int nNextGen) //Соединяем вершину с дргуими
 {
     int nCounter = 0;
+    srand(time(0));
     if (nNextGen <= nGenNumber + 1) {
         for (int i1 = 0; i1 < nOneGenNodes; i1++) {
-            if ((rand() % 5 != 3 && rand() % 5 != 2) && nCounter <= nMaxConnects - 1) {
+            if ((rand() % 3 != 0) && nCounter <= nMaxConnects - 1) {
                 if (aNodes[nNextGen - 1][i1].aId[0] == 0) {
 
                     aNodes[nNextGen - 1][i1].aId[0] = nNextGen;
