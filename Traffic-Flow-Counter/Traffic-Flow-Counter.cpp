@@ -8,7 +8,7 @@
 using namespace std;
 const int nMaxConnects = 3; //Максимальное количесвто связей к и от вершины
 const int nOneGenNodes = 4; //Количество вершин в поколении
-const int nGenNumber = 6; //Максимальное количество поколений
+const int nGenNumber = 9; //Максимальное количество поколений
 const int nMaxFlow = 20; //Максимальное значение пропускной способности
 struct Node;
 struct Edge;
@@ -31,9 +31,16 @@ deque<deque<deque<int>>> Paths(0, deque<deque<int>> (0, deque<int>(0)));
 void ConnectNode(Node &vCurrent, int nNextGen) //Соединяем вершину с дргуими
 {
     int nCounter = 0;
-    srand(time(0));
-    if (nNextGen <= nGenNumber + 1) {
+    int nRemember = nNextGen;
+    if (nRemember <= nGenNumber + 1) {
         for (int i1 = 0; i1 < nOneGenNodes; i1++) {
+            nNextGen = nRemember + rand() % (nGenNumber + 2 - nRemember);
+            auto now = chrono::high_resolution_clock::now();
+            auto now_ms = chrono::time_point_cast<chrono::milliseconds>(now);
+            auto epoch = now_ms.time_since_epoch();
+            auto value = chrono::duration_cast<chrono::milliseconds>(epoch);
+            long duration = value.count();
+            srand(duration);
             if ((rand() % 3 != 0) && nCounter <= nMaxConnects - 1) {
                 if (aNodes[nNextGen - 1][i1].aId[0] == 0) {
 
@@ -224,5 +231,5 @@ int main()
     Paths.push_back(first_path);
     FindPaths(Paths[0]);
     auto fStartTime = chrono::high_resolution_clock::now(); //ед. измерения - микросекунды
-    cout << '|' << FordFalkersonAlgorithm() << '|' << std::chrono::duration_cast<std::chrono::microseconds>( std::chrono::high_resolution_clock::now()- fStartTime ).count();
+    cout << '|' << FordFalkersonAlgorithm() << '|' << chrono::duration_cast<std::chrono::microseconds>( std::chrono::high_resolution_clock::now()- fStartTime ).count() << '|' << nGenNumber + 2;
 }
