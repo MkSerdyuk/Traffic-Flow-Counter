@@ -32,21 +32,25 @@ void ConnectNode(Node &vCurrent, int nNextGen) //Соединяем вершин
 {
     int nCounter = 0;
     int nRemember = nNextGen;
+    int seed = time(0);
     if (nRemember <= nGenNumber + 1) {
         for (int i1 = 0; i1 < nOneGenNodes; i1++) {
-            nNextGen = nRemember + rand() % (nGenNumber + 2 - nRemember);
-            auto now = chrono::high_resolution_clock::now();
-            auto now_ms = chrono::time_point_cast<chrono::milliseconds>(now);
+            auto now = std::chrono::system_clock::now();
+            auto now_ms = std::chrono::time_point_cast<std::chrono::milliseconds>(now);
             auto epoch = now_ms.time_since_epoch();
-            auto value = chrono::duration_cast<chrono::milliseconds>(epoch);
+            auto value = std::chrono::duration_cast<std::chrono::milliseconds>(epoch);
             long duration = value.count();
-            srand(duration);
+            seed = duration*seed+19;
+            srand(seed+71);
+            nNextGen = nRemember + rand() % (nGenNumber + 2 - nRemember);
             if ((rand() % 3 != 0) && nCounter <= nMaxConnects - 1) {
                 if (aNodes[nNextGen - 1][i1].aId[0] == 0) {
 
                     aNodes[nNextGen - 1][i1].aId[0] = nNextGen;
                     aNodes[nNextGen - 1][i1].aId[1] = i1 + 1;
                 }
+                seed = seed*2;
+                srand(seed);
                 vCurrent.aNext[nCounter].aEndId[0] = aNodes[nNextGen - 1][i1].aId[0];
                 vCurrent.aNext[nCounter].aEndId[1] = aNodes[nNextGen - 1][i1].aId[1];
                 vCurrent.aNext[nCounter].nFlow = 1 + rand() % nMaxFlow;
