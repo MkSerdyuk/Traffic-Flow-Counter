@@ -21,6 +21,7 @@ namespace Traffic_Flow_Counter
             Pen pen = new Pen(Color.FromArgb(0, 0, 0));
             NetworkReader networkNetworkReader= new NetworkReader();
             networkNetworkReader.AnalizeNetwork();
+            pictureBox1.Size = new System.Drawing.Size((networkNetworkReader.FrameLength + 2) * width, pictureBox1.Size.Height);
             label5.Text = Convert.ToString(networkNetworkReader.AlgorithmResults[0]);
             label6.Text = Convert.ToString(networkNetworkReader.TimeForAlgorithms[0]) + " мкс";
             foreach (NetworkReader.Node nodeNode in networkNetworkReader.NodesNetwork)
