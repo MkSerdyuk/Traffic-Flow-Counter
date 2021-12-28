@@ -7,8 +7,8 @@
 
 using namespace std;
 const int nMaxConnects = 3; //Максимальное количесвто связей к и от вершины
-const int nOneGenNodes = 4; //Количество вершин в поколении
-const int nGenNumber = 9; //Максимальное количество поколений
+const int nOneGenNodes = 5; //Количество вершин в поколении
+const int nGenNumber = 15; //Максимальное количество поколений
 const int nMaxFlow = 20; //Максимальное значение пропускной способности
 struct Node;
 struct Edge;
@@ -28,55 +28,7 @@ struct Node //Вершина
 };
 Node aNodes[nGenNumber + 2][nOneGenNodes]; //Массив хранящий все вершины
 deque<deque<deque<int>>> Paths(0, deque<deque<int>> (0, deque<int>(0)));
-
-void CopyPath(deque<deque<int>> original, deque<deque<int>> &copy);
-
-int dequeLength(deque<deque<deque<int>>> deque1) //без этого будут пробелмы при передаче данных в функцию
-{
-    int length = deque1.size();
-    return length;
-
-}
-
-int dequeLength(deque<deque<int>> deque1) //без этого будут пробелмы при передаче данных в функцию
-{
-    int length = deque1.size();
-    return length;
-
-}
-
-void SwapPaths(deque<deque<int>> first, deque<deque<int>> second)
-{
-    deque<deque<int>> temp(0,deque<int>(0));
-    CopyPath(first, temp);
-    CopyPath(second, first);
-    CopyPath(temp, second);
-}
-
-void Sort(deque<deque<deque<int>>> Paths, int last) //Алгоритм быстрой сортировки Тони Хоара
-{
-    int start = 0;
-    int end = last - 1;
-    int middle = (last - 1)/2;	// индекс центрального элемента
-    deque<deque<deque<int>>> tempHalth(0, deque<deque<int>> (0, deque<int>(0)));
-    do
-    {
-        while ( dequeLength(Paths[start]) < dequeLength(Paths[middle]))
-        {
-            start++;
-        }
-        while ( dequeLength(Paths[start]) > dequeLength(Paths[middle]))
-        {
-            end--;
-        }
-        if (start <= end) {
-            SwapPaths(Paths[start], Paths[end]);
-            start++;
-            end--;
-        }
-    }
-    while (start <= end);
-}
+deque<deque<deque<int>>> SortedPaths(0, deque<deque<int>> (0, deque<int>(0)));
 
 
 void ConnectNode(Node &vCurrent, int nNextGen) //Соединяем вершину с дргуими
@@ -108,6 +60,20 @@ void ConnectNode(Node &vCurrent, int nNextGen) //Соединяем вершин
                 vCurrent.aNext[nCounter].nFlowLeft = vCurrent.aNext[nCounter].nFlow;
                 ConnectNode(aNodes[nNextGen - 1][i1], nNextGen + 1);
                 nCounter++;
+            }
+        }
+    }
+}
+
+void RebuildNodes() //восстанавливаем остаточные пропускные способности
+{
+    for (int i1 = 0; i1 < nGenNumber+2; i1++)
+    {
+        for (int i2 = 0; i2 < nOneGenNodes; i2++)
+        {
+            for (int i3 = 0; i3 < nMaxConnects; i3++)
+            {
+                aNodes[i1][i2].aNext[i3].nFlowLeft = aNodes[i1][i2].aNext[i3].nFlow;
             }
         }
     }
@@ -196,6 +162,10 @@ void CopyPath(deque<deque<int>> original, deque<deque<int>> &copy) //копир�
 
     deque<deque<int>> memorizedPath (0, deque<int>(0));
     int length = currentPath.size() - 1;
+    if (aNodes[currentPath[length][0] - 1][currentPath[length][1] - 1].aId[0] == nGenNumber + 2)
+    {
+        SortedPaths.push_back(currentPath); //таким образом получем пути, упорядоченные по длине
+    }
     for (int i = 0; i < nMaxConnects; i++)
     {
        if (aNodes[currentPath[length][0] - 1][currentPath[length][1] - 1].aNext[i].aEndId[0] != 0)
@@ -215,7 +185,6 @@ void CopyPath(deque<deque<int>> original, deque<deque<int>> &copy) //копир�
             }
         }
     }
-
 }
 
 bool IsIncreasing(deque<deque<int>> currentPath) //проверка,  на увеличивающий путь
@@ -243,12 +212,12 @@ void IncreaseFlow(deque<deque<int>> currentPath) //увеличние поток
     }
 }
 
-int FordFalkersonAlgorithm()
+int FordFalkersonAlgorithm(deque<deque<deque<int>>> usedPaths)
 {
     int result = 0;
-    for (int i = 0; i < Paths.size(); i++)
+    for (int i = 0; i < usedPaths.size(); i++)
     {
-        IncreaseFlow(Paths[i]);
+        IncreaseFlow(usedPaths[i]);
     }
     for (int i1 = 0; i1 < nOneGenNodes; i1++)
     {
@@ -258,6 +227,11 @@ int FordFalkersonAlgorithm()
         }
     }
     return result;
+}
+
+int EdmondsKarpAlgorithm() //отличие от алгортма Форда-Фалкерсона в нахаждении кратчайших путей (в данной программе реализовано через сортировку путе по длине)
+{
+    return FordFalkersonAlgorithm(SortedPaths);
 }
 
 int main()
@@ -284,6 +258,8 @@ int main()
     Paths.push_back(first_path);
     FindPaths(Paths[0]);
     auto fStartTime = chrono::high_resolution_clock::now(); //ед. измерения - микросекунды
-    cout << '|' << FordFalkersonAlgorithm() << '|' << chrono::duration_cast<std::chrono::microseconds>( std::chrono::high_resolution_clock::now()- fStartTime ).count() << '|' << nGenNumber + 2;
-    //Sort(Paths, dequeLength(Paths));
+    cout << '|' << FordFalkersonAlgorithm(Paths) << '|' << chrono::duration_cast<chrono::microseconds>( chrono::high_resolution_clock::now()- fStartTime).count() << '|' << nGenNumber + 2;
+    RebuildNodes();
+    fStartTime = chrono::high_resolution_clock::now();
+    cout << '|' << EdmondsKarpAlgorithm() << '|' << chrono::duration_cast<std::chrono::microseconds>( chrono::high_resolution_clock::now()- fStartTime).count();
 }
