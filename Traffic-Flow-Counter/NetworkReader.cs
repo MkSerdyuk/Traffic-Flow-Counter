@@ -79,10 +79,12 @@ namespace Traffic_Flow_Counter
         {
             string stringData = ReadNetwotk();
             string[] stringsDataSplit = stringData.Split('|');
-            AlgorithmResults = new int[1];
+            AlgorithmResults = new int[2];
             AlgorithmResults[0] = Convert.ToInt32(stringsDataSplit[2]);
-            TimeForAlgorithms = new int[1];
+            AlgorithmResults[1] = Convert.ToInt32(stringsDataSplit[5]);
+            TimeForAlgorithms = new int[2];
             TimeForAlgorithms[0] = Convert.ToInt32(stringsDataSplit[3]);
+            TimeForAlgorithms[1] = Convert.ToInt32(stringsDataSplit[6]);
             FrameLength = Convert.ToInt32(stringsDataSplit[4]);
             int intMaxEdges = Convert.ToInt32(stringsDataSplit[0]);
             string[] stringsCodedNodes = stringsDataSplit[1].Split(new char[] {'[', ']'});

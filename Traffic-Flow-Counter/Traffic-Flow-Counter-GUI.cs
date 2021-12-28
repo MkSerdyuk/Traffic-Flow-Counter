@@ -24,6 +24,8 @@ namespace Traffic_Flow_Counter
             pictureBox1.Size = new System.Drawing.Size((networkNetworkReader.FrameLength + 2) * width, pictureBox1.Size.Height);
             label5.Text = Convert.ToString(networkNetworkReader.AlgorithmResults[0]);
             label6.Text = Convert.ToString(networkNetworkReader.TimeForAlgorithms[0]) + " мкс";
+            label8.Text = Convert.ToString(networkNetworkReader.AlgorithmResults[1]);
+            label9.Text = Convert.ToString(networkNetworkReader.TimeForAlgorithms[1]) + " мкс";
             foreach (NetworkReader.Node nodeNode in networkNetworkReader.NodesNetwork)
             {
                 if (nodeNode.aId != null)
