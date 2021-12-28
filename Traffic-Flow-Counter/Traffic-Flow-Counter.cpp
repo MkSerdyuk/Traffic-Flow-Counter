@@ -156,13 +156,13 @@ void CopyPath(deque<deque<int>> original, deque<deque<int>> &copy) //копир�
 
 }
 
- void FindPaths(deque<deque<int>> &currentPath) //поиск всех путей в графе
+ void FindPaths(deque<deque<int>> &currentPath, int mode) //поиск всех путей в графе
 {
     int nConnectCounter = 0;
 
     deque<deque<int>> memorizedPath (0, deque<int>(0));
     int length = currentPath.size() - 1;
-    if (aNodes[currentPath[length][0] - 1][currentPath[length][1] - 1].aId[0] == nGenNumber + 2)
+    if ((aNodes[currentPath[length][0] - 1][currentPath[length][1] - 1].aId[0] == nGenNumber + 2) && mode == 2)
     {
         SortedPaths.push_back(currentPath); //таким образом получем пути, упорядоченные по длине
     }
@@ -175,13 +175,13 @@ void CopyPath(deque<deque<int>> original, deque<deque<int>> &copy) //копир�
             {
                 CopyPath(currentPath,memorizedPath);
                 currentPath.push_back(SetId(aNodes[currentPath[length][0] - 1][currentPath[length][1] - 1].aNext[i].aEndId, i));
-                FindPaths(currentPath);
+                FindPaths(currentPath, mode);
             }
             else
             {
                 Paths.push_back(memorizedPath);
                 Paths[Paths.size() - 1].push_back(SetId(aNodes[currentPath[length][0] - 1][currentPath[length][1] - 1].aNext[i].aEndId, i));
-                FindPaths(Paths[Paths.size() - 1]);
+                FindPaths(Paths[Paths.size() - 1], mode);
             }
         }
     }
@@ -256,10 +256,13 @@ int main()
     deque<deque<int>> first_path(0, deque<int>(0));
     first_path.push_back(SetId(aNodes[0][0].aId, 0));
     Paths.push_back(first_path);
-    FindPaths(Paths[0]);
     auto fStartTime = chrono::high_resolution_clock::now(); //ед. измерения - микросекунды
+    FindPaths(Paths[0], 1);
     cout << '|' << FordFalkersonAlgorithm(Paths) << '|' << chrono::duration_cast<chrono::microseconds>( chrono::high_resolution_clock::now()- fStartTime).count() << '|' << nGenNumber + 2;
     RebuildNodes();
+    Paths.clear();
+    Paths.push_back(first_path);
     fStartTime = chrono::high_resolution_clock::now();
+    FindPaths(Paths[0], 2);
     cout << '|' << EdmondsKarpAlgorithm() << '|' << chrono::duration_cast<std::chrono::microseconds>( chrono::high_resolution_clock::now()- fStartTime).count();
 }
