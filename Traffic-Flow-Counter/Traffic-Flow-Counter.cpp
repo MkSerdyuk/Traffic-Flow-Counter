@@ -13,6 +13,7 @@ const int nMaxFlow = 20; //Максимальное значение пропу�
 struct Node;
 struct Edge;
 int nIdCounter = 1;
+
 struct Edge //Ребро
 {
     int nFlow; //Максимальный транспортный поток
@@ -28,6 +29,56 @@ struct Node //Вершина
 Node aNodes[nGenNumber + 2][nOneGenNodes]; //Массив хранящий все вершины
 deque<deque<deque<int>>> Paths(0, deque<deque<int>> (0, deque<int>(0)));
 
+void CopyPath(deque<deque<int>> original, deque<deque<int>> &copy);
+
+int dequeLength(deque<deque<deque<int>>> deque1) //без этого будут пробелмы при передаче данных в функцию
+{
+    int length = deque1.size();
+    return length;
+
+}
+
+int dequeLength(deque<deque<int>> deque1) //без этого будут пробелмы при передаче данных в функцию
+{
+    int length = deque1.size();
+    return length;
+
+}
+
+void SwapPaths(deque<deque<int>> first, deque<deque<int>> second)
+{
+    deque<deque<int>> temp(0,deque<int>(0));
+    CopyPath(first, temp);
+    CopyPath(second, first);
+    CopyPath(temp, second);
+}
+
+void Sort(deque<deque<deque<int>>> Paths, int last) //Алгоритм быстрой сортировки Тони Хоара
+{
+    int start = 0;
+    int end = last - 1;
+    int middle = (last - 1)/2;	// индекс центрального элемента
+    deque<deque<deque<int>>> tempHalth(0, deque<deque<int>> (0, deque<int>(0)));
+    do
+    {
+        while ( dequeLength(Paths[start]) < dequeLength(Paths[middle]))
+        {
+            start++;
+        }
+        while ( dequeLength(Paths[start]) > dequeLength(Paths[middle]))
+        {
+            end--;
+        }
+        if (start <= end) {
+            SwapPaths(Paths[start], Paths[end]);
+            start++;
+            end--;
+        }
+    }
+    while (start <= end);
+}
+
+
 void ConnectNode(Node &vCurrent, int nNextGen) //Соединяем вершину с дргуими
 {
     int nCounter = 0;
@@ -35,7 +86,7 @@ void ConnectNode(Node &vCurrent, int nNextGen) //Соединяем вершин
     int seed = time(0);
     if (nRemember <= nGenNumber + 1) {
         for (int i1 = 0; i1 < nOneGenNodes; i1++) {
-            auto now = std::chrono::system_clock::now();
+            auto now = std::chrono::system_clock::now(); //создание сложного стда для рандома
             auto now_ms = std::chrono::time_point_cast<std::chrono::milliseconds>(now);
             auto epoch = now_ms.time_since_epoch();
             auto value = std::chrono::duration_cast<std::chrono::milliseconds>(epoch);
@@ -119,11 +170,9 @@ void Output() //Вывод сети для отрисовки
     cout << nMaxConnects;
     cout << '|';
     OutputNodes();
-    //cout << '|';
-    //cout << FordFalkersonAlgorithm();
 }
 
-deque<int> SetId(int aId[2], int nEdgeNum)
+deque<int> SetId(int aId[2], int nEdgeNum) //создание deque с Id
 {
     deque<int> result(0);
     result.push_back(aId[0]);
@@ -132,7 +181,7 @@ deque<int> SetId(int aId[2], int nEdgeNum)
     return result;
 }
 
-void CopyPath(deque<deque<int>> original, deque<deque<int>> &copy)
+void CopyPath(deque<deque<int>> original, deque<deque<int>> &copy) //копирование пути
 {
     for (int i = 0; i < original.size(); i++)
     {
@@ -141,7 +190,7 @@ void CopyPath(deque<deque<int>> original, deque<deque<int>> &copy)
 
 }
 
- void FindPaths(deque<deque<int>> &currentPath)
+ void FindPaths(deque<deque<int>> &currentPath) //поиск всех путей в графе
 {
     int nConnectCounter = 0;
 
@@ -183,7 +232,7 @@ bool IsIncreasing(deque<deque<int>> currentPath) //проверка,  на ув�
     return result;
 }
 
-void IncreaseFlow(deque<deque<int>> currentPath)
+void IncreaseFlow(deque<deque<int>> currentPath) //увеличние потока в данном пути
 {
     while (IsIncreasing(currentPath))
     {
@@ -236,4 +285,5 @@ int main()
     FindPaths(Paths[0]);
     auto fStartTime = chrono::high_resolution_clock::now(); //ед. измерения - микросекунды
     cout << '|' << FordFalkersonAlgorithm() << '|' << chrono::duration_cast<std::chrono::microseconds>( std::chrono::high_resolution_clock::now()- fStartTime ).count() << '|' << nGenNumber + 2;
+    //Sort(Paths, dequeLength(Paths));
 }
