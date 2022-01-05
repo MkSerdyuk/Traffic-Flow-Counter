@@ -187,15 +187,14 @@ void CopyPath(deque<deque<int>> original, deque<deque<int>> &copy) //копир�
     }
 }
 
-bool IsIncreasing(deque<deque<int>> currentPath) //проверка,  на увеличивающий путь
+int IsIncreasing(deque<deque<int>> currentPath) //проверка,  на увеличивающий путь
 {
-    bool result = true;
+    int result = 0;
     for (int i = 0; i < currentPath.size() - 1; i++)
     {
-        if (aNodes[currentPath[i][0] - 1][currentPath[i][1] - 1].aNext[currentPath[i+1][2]].nFlowLeft == 0)
+        if (aNodes[currentPath[i][0] - 1][currentPath[i][1] - 1].aNext[currentPath[i+1][2]].nFlowLeft > result)
         {
-            result = false;
-            break;
+            result = aNodes[currentPath[i][0] - 1][currentPath[i][1] - 1].aNext[currentPath[i+1][2]].nFlowLeft;
         }
     }
     return result;
@@ -203,11 +202,12 @@ bool IsIncreasing(deque<deque<int>> currentPath) //проверка,  на ув�
 
 void IncreaseFlow(deque<deque<int>> currentPath) //увеличние потока в данном пути
 {
-    while (IsIncreasing(currentPath))
+    int nMaxFlowLeft = IsIncreasing(currentPath);
+    if (nMaxFlowLeft > 0)
     {
         for (int i = 0; i < currentPath.size() - 1; i++)
         {
-            aNodes[currentPath[i][0] - 1][currentPath[i][1] - 1].aNext[currentPath[i+1][2]].nFlowLeft--;
+            aNodes[currentPath[i][0] - 1][currentPath[i][1] - 1].aNext[currentPath[i+1][2]].nFlowLeft - nMaxFlowLeft;
         }
     }
 }
