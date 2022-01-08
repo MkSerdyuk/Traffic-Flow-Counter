@@ -6,9 +6,9 @@
 #include <chrono>
 
 using namespace std;
-const int nMaxConnects = 5; //Максимальное количесвто связей к и от вершины
-const int nOneGenNodes = 5; //Количество вершин в поколении
-const int nGenNumber = 15; //Максимальное количество поколений
+const int nMaxConnects = 3; //Максимальное количесвто связей к и от вершины
+const int nOneGenNodes = 3; //Количество вершин в поколении
+const int nGenNumber = 3; //Максимальное количество поколений
 const int nMaxFlow = 20; //Максимальное значение пропускной способности
 const int nPossibility = 100; //Чем больше, тем больше шанс, что появится ребро
 struct Node;
