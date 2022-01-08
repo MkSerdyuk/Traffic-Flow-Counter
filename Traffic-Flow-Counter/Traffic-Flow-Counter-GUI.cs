@@ -26,6 +26,8 @@ namespace Traffic_Flow_Counter
             label6.Text = Convert.ToString(networkNetworkReader.TimeForAlgorithms[0]) + " мкс";
             label8.Text = Convert.ToString(networkNetworkReader.AlgorithmResults[1]);
             label9.Text = Convert.ToString(networkNetworkReader.TimeForAlgorithms[1]) + " мкс";
+            label11.Text = Convert.ToString(networkNetworkReader.AlgorithmResults[2]);
+            label12.Text = Convert.ToString(networkNetworkReader.TimeForAlgorithms[2]) + " мкс";
             foreach (NetworkReader.Node nodeNode in networkNetworkReader.NodesNetwork)
             {
                 if (nodeNode.aId != null)
@@ -46,6 +48,5 @@ namespace Traffic_Flow_Counter
                 }
             }
         }
-        
     }
 }

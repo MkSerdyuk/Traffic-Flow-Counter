@@ -40,6 +40,9 @@
             this.label7 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
+            this.label10 = new System.Windows.Forms.Label();
+            this.label11 = new System.Windows.Forms.Label();
+            this.label12 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize) (this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -132,11 +135,36 @@
             this.label9.Size = new System.Drawing.Size(161, 23);
             this.label9.TabIndex = 11;
             // 
+            // label10
+            // 
+            this.label10.Location = new System.Drawing.Point(51, 481);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(83, 23);
+            this.label10.TabIndex = 12;
+            this.label10.Text = "Еф.-Диниц";
+            // 
+            // label11
+            // 
+            this.label11.Location = new System.Drawing.Point(150, 481);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(63, 23);
+            this.label11.TabIndex = 13;
+            // 
+            // label12
+            // 
+            this.label12.Location = new System.Drawing.Point(229, 481);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(161, 23);
+            this.label12.TabIndex = 14;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1382, 503);
+            this.ClientSize = new System.Drawing.Size(1382, 522);
+            this.Controls.Add(this.label12);
+            this.Controls.Add(this.label11);
+            this.Controls.Add(this.label10);
             this.Controls.Add(this.label9);
             this.Controls.Add(this.label8);
             this.Controls.Add(this.label7);
@@ -153,6 +181,10 @@
             ((System.ComponentModel.ISupportInitialize) (this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
         }
+
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.Label label12;
 
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Label label9;
