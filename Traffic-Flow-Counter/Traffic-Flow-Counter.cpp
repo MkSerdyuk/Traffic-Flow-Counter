@@ -6,11 +6,11 @@
 #include <chrono>
 
 using namespace std;
-const int nMaxConnects = 3; //Максимальное количесвто связей к и от вершины
+const int nMaxConnects = 5; //Максимальное количесвто связей к и от вершины
 const int nOneGenNodes = 5; //Количество вершин в поколении
 const int nGenNumber = 15; //Максимальное количество поколений
 const int nMaxFlow = 20; //Максимальное значение пропускной способности
-const int nPossibility = 3; //Чем больше, тем больше шанс, что появится ребро
+const int nPossibility = 100; //Чем больше, тем больше шанс, что появится ребро
 struct Node;
 struct Edge;
 
@@ -27,20 +27,16 @@ struct Node //Вершина
     int aId[2]; //Индивидуальный номер вершины
     Edge aNext[nMaxConnects]; //Ребра идущие от вершины
 };
+
 int seed = 1;
 Node aNodes[nGenNumber + 2][nOneGenNodes]; //Массив хранящий все вершины
-deque<deque<deque<int>>> Paths(0, deque<deque<int>> (0, deque<int>(0)));
-deque<deque<deque<int>>> SortedPaths(0, deque<deque<int>> (0, deque<int>(0)));
-deque<deque<deque<int>>> BlockingPaths(0, deque<deque<int>> (0, deque<int>(0))); //пути найденные поиском в ширину
+deque<deque<deque<int>>> Paths(0, deque<deque<int>> (0, deque<int>(0))); //пути найденные поиском в ширину
+deque<deque<deque<int>>> SortedPaths(0, deque<deque<int>> (0, deque<int>(0))); //пути найденные поиском в ширину
+deque<deque<deque<int>>> BlockingPaths(0, deque<deque<int>> (0, deque<int>(0))); //пути найденные поиском в глубину для алгоритма ефима-диница
 
 int Random(int limit)
 {
-    auto now = std::chrono::system_clock::now(); //создание сложного стда для рандома
-    auto now_ms = std::chrono::time_point_cast<std::chrono::milliseconds>(now);
-    auto epoch = now_ms.time_since_epoch();
-    auto value = std::chrono::duration_cast<std::chrono::milliseconds>(epoch);
-    long duration = value.count();
-    seed = seed/13*21+duration;
+    seed = seed/13*21+time(0);
     srand(seed);
     return rand() % limit;
 }
@@ -135,11 +131,11 @@ void OutputNodes()
     }
 }
 
-void ClearPaths()
+void ClearDeque(auto &currentPaths)
 {
-    while(Paths.size())
+    while(currentPaths.size())
     {
-        Paths.pop_back();
+        currentPaths.pop_back();
     }
 }
 
@@ -172,22 +168,22 @@ void CopyPath(deque<deque<int>> original, deque<deque<int>> &copy) //копир�
 {
     bool bConnected = false;
     deque<deque<int>> memorizedPath (0, deque<int>(0));
-    int length = currentPath.size() - 1;
+    Node* currentNode = &currentNetwork[currentPath[currentPath.size() - 1][0] - 1][currentPath[currentPath.size() - 1][1] - 1];
     for (int i = 0; i < nMaxConnects; i++)
     {
-       if (currentNetwork[currentPath[length][0] - 1][currentPath[length][1] - 1].aNext[i].aEndId[0] != 0)
+       if (currentNode->aNext[i].aEndId[0] != 0)
         {
             if (!bConnected)
             {
                 bConnected = true;
                 CopyPath(currentPath,memorizedPath);
-                currentPath.push_back(SetId(currentNetwork[currentPath[length][0] - 1][currentPath[length][1] - 1].aNext[i].aEndId, i));
+                currentPath.push_back(SetId(currentNode->aNext[i].aEndId, i));
                 BFS(currentPath, currentNetwork);
             }
             else
             {
                 Paths.push_back(memorizedPath);
-                Paths[Paths.size() - 1].push_back(SetId(currentNetwork[currentPath[length][0] - 1][currentPath[length][1] - 1].aNext[i].aEndId, i));
+                Paths[Paths.size() - 1].push_back(SetId(currentNode->aNext[i].aEndId, i));
                 BFS(Paths[Paths.size() - 1], currentNetwork);
             }
         }
@@ -198,53 +194,27 @@ void ModifiedBFS(deque<deque<int>> currentPath, Node currentNetwork[nGenNumber +
 {
     bool bConnected = false;
     deque<deque<int>> memorizedPath (0, deque<int>(0));
-    int length = currentPath.size() - 1;
-    if (currentNetwork[currentPath[length][0] - 1][currentPath[length][1] - 1].aId[0] == nGenNumber + 2)
+    Node* currentNode = &currentNetwork[currentPath[currentPath.size() - 1][0] - 1][currentPath[currentPath.size() - 1][1] - 1];
+    if (currentNode->aId[0] == nGenNumber + 2)
     {
         SortedPaths.push_back(currentPath); //таким образом получем пути, упорядоченные по длине
     }
     for (int i = 0; i < nMaxConnects; i++)
     {
-        if (currentNetwork[currentPath[length][0] - 1][currentPath[length][1] - 1].aNext[i].aEndId[0] != 0)
+        if (currentNode->aNext[i].aEndId[0] != 0)
         {
             if (!bConnected)
             {
                 bConnected = true;
                 CopyPath(currentPath,memorizedPath);
-                currentPath.push_back(SetId(currentNetwork[currentPath[length][0] - 1][currentPath[length][1] - 1].aNext[i].aEndId, i));
+                currentPath.push_back(SetId(currentNode->aNext[i].aEndId, i));
                 ModifiedBFS(currentPath, currentNetwork);
             }
             else
             {
                 Paths.push_back(memorizedPath);
-                Paths[Paths.size() - 1].push_back(SetId(currentNetwork[currentPath[length][0] - 1][currentPath[length][1] - 1].aNext[i].aEndId, i));
+                Paths[Paths.size() - 1].push_back(SetId(currentNode->aNext[i].aEndId, i));
                 ModifiedBFS(Paths[Paths.size() - 1], currentNetwork);
-            }
-        }
-    }
-}
-
-deque<deque<int>> toUnblock(0, deque<int>(0)); //список вершин, которые надо разблокировать
-void GreedyDFS(deque<deque<int>> &currentPath, Node currentNetwork[nGenNumber + 2][nOneGenNodes]) //"Жадный" поиск в глубину всех путей в графе
-{
-    int length = currentPath.size() - 1;
-    if (currentNetwork[currentPath[length][0] - 1][currentPath[length][1] - 1].aId[0] == nGenNumber + 2)
-    {
-        BlockingPaths.push_back(currentPath);
-        deque<deque<int>> newPath(0, deque<int>(0));
-        newPath.push_back(SetId(aNodes[0][0].aId, 0));
-        GreedyDFS(newPath, currentNetwork);
-    }
-    else
-    {
-        for (int i = 0; i < nMaxConnects; i++) {
-            if (currentNetwork[currentPath[length][0] - 1][currentPath[length][1] - 1].aNext[i].aEndId[0] != 0 &&
-                !currentNetwork[currentPath[length][0] - 1][currentPath[length][1] - 1].aNext[i].bBlocked) {
-                currentNetwork[currentPath[length][0] - 1][currentPath[length][1] - 1].aNext[i].bBlocked = true;
-                currentPath.push_back(
-                        SetId(currentNetwork[currentPath[length][0] - 1][currentPath[length][1] - 1].aNext[i].aEndId,
-                              i));
-                GreedyDFS(currentPath, currentNetwork);
             }
         }
     }
@@ -252,10 +222,10 @@ void GreedyDFS(deque<deque<int>> &currentPath, Node currentNetwork[nGenNumber + 
 
 int IsIncreasing(deque<deque<int>> currentPath) //проверка на увеличивающий путь и возвращение максимального потока в сети
 {
-    int result = 0;
+    int result = nMaxFlow;
     for (int i = 0; i < currentPath.size() - 1; i++)
     {
-        if (aNodes[currentPath[i][0] - 1][currentPath[i][1] - 1].aNext[currentPath[i+1][2]].nFlowLeft > result)
+        if (aNodes[currentPath[i][0] - 1][currentPath[i][1] - 1].aNext[currentPath[i+1][2]].nFlowLeft < result)
         {
             result = aNodes[currentPath[i][0] - 1][currentPath[i][1] - 1].aNext[currentPath[i+1][2]].nFlowLeft;
         }
@@ -263,7 +233,7 @@ int IsIncreasing(deque<deque<int>> currentPath) //проверка на увел
     return result;
 }
 
-void IncreaseFlow(deque<deque<int>> currentPath) //увеличние потока в данном пути
+int IncreaseFlow(deque<deque<int>> currentPath) //увеличние потока в данном пути
 {
     int nMaxFlowLeft = IsIncreasing(currentPath);
     if (nMaxFlowLeft > 0)
@@ -273,6 +243,7 @@ void IncreaseFlow(deque<deque<int>> currentPath) //увеличние поток
             aNodes[currentPath[i][0] - 1][currentPath[i][1] - 1].aNext[currentPath[i+1][2]].nFlowLeft = aNodes[currentPath[i][0] - 1][currentPath[i][1] - 1].aNext[currentPath[i+1][2]].nFlowLeft - nMaxFlowLeft;
         }
     }
+    return nMaxFlowLeft;
 }
 
 int FordFalkersonCore(deque<deque<deque<int>>> usedPaths)
@@ -280,14 +251,7 @@ int FordFalkersonCore(deque<deque<deque<int>>> usedPaths)
     int result = 0;
     for (int i = 0; i < usedPaths.size(); i++)
     {
-        IncreaseFlow(usedPaths[i]);
-    }
-    for (int i1 = 0; i1 < nOneGenNodes; i1++)
-    {
-        for (int i2 = 0; i2 < nMaxConnects; i2++)
-        {
-            result = result + aNodes[nGenNumber][i1].aNext[i2].nFlow - aNodes[nGenNumber][i1].aNext[i2].nFlowLeft;
-        }
+        result += IncreaseFlow(usedPaths[i]);;
     }
     return result;
 }
@@ -310,10 +274,112 @@ int EdmondsKarpAlgorithm() //отличие от алгортма Форда-Ф�
     return FordFalkersonCore(SortedPaths);
 }
 
+deque<Edge*> blockedEdges (0); //список ребер, которые надо разблокировать
+void UnblockEdges()
+{
+    while (blockedEdges.size())
+    {
+            blockedEdges.front()->bBlocked = false;
+            blockedEdges.pop_front();
+    }
+}
+void GreedyDFS(deque<deque<int>> &currentPath, Node currentNetwork[nGenNumber + 2][nOneGenNodes]) //"Жадный" поиск в глубину всех путей в графе
+{
+    Node* currentNode = &currentNetwork[currentPath[currentPath.size() - 1][0] - 1][currentPath[currentPath.size() - 1][1] - 1];
+    if(currentNode->aId[0] != nGenNumber + 2)
+    {
+        for (int i = 0; i < nMaxConnects; i++)
+        {
+            if (currentNode->aNext[i].aEndId[0] != 0 && currentNode->aNext[i].nFlowLeft != 0 && !currentNode->aNext[i].bBlocked)
+            {
+                currentNode->aNext[i].bBlocked = true;
+                blockedEdges.push_back(&currentNode->aNext[i]);
+                currentPath.push_back(SetId(currentNode->aNext[i].aEndId, i));
+                GreedyDFS(currentPath, currentNetwork);
+                if (currentPath.back()[0] == nGenNumber + 2)
+                {
+                    break;
+                }
+                //else
+               // {
+               //     currentPath.pop_back();
+                    //GreedyDFS(currentPath, currentNetwork);
+               // }
+                //break;
+            }
+            if (i == nMaxConnects - 1 && currentPath.back()[0] != nGenNumber + 2)
+            {
+                currentPath.pop_back();
+            }
+        }
+    }
+    /*if (currentNode->aId[0] == nGenNumber + 2)
+    {
+        BlockingPaths.push_back(currentPath);
+        deque<deque<int>> newPath(0, deque<int>(0));
+        newPath.push_back(SetId(aNodes[0][0].aId, 0));
+        GreedyDFS(newPath, currentNetwork);
+    }
+    else
+    {
+            for (int i = 0; i < nMaxConnects; i++)
+            {
+                if (currentNode->aNext[i].aEndId[0] != 0 && currentNode->aNext[i].nFlowLeft != 0 && !currentNode->aNext[i].bBlocked)
+                {
+                    currentNode->aNext[i].bBlocked = true;
+                    //blockedEdges.push_back(SetId(currentNode->aId, i));
+                    currentPath.push_back(SetId(currentNode->aNext[i].aEndId, i));
+                    GreedyDFS(currentPath, currentNetwork);
+                    //break;
+                }
+            }
+    }*/
+}
 
 int EphimDinicAlgorithm()
 {
-    return 0;
+    int result = 0;
+    deque<deque<int>> first_path(0, deque<int>(0));
+    first_path.push_back(SetId(aNodes[0][0].aId, 0));
+    bool stop = false;
+    do
+    {
+        UnblockEdges();
+        if (BlockingPaths.size() > 0)
+        {
+           stop = true;
+        }
+        while(!BlockingPaths.empty())
+        {
+            if (BlockingPaths.front().size() > 1)
+            {
+                stop = false;
+                result += IncreaseFlow(BlockingPaths.front());
+            }
+            BlockingPaths.pop_front();
+        }
+        for (int i = 0; i < nMaxConnects; i++)
+        {
+            if(!stop)
+            {
+                BlockingPaths.push_back(first_path);
+                GreedyDFS(BlockingPaths.back(), aNodes);
+            }
+        }
+
+        /*first_path.push_back(SetId(aNodes[0][0].aId, 0));
+        GreedyDFS(first_path, aNodes);
+        if(!BlockingPaths.empty())
+        {*/
+        //}/*
+        /*else
+        {
+            break;
+        }
+        ClearDeque(first_path);*/
+    }
+    while(BlockingPaths.size());
+    return result;
 }
 
 int main()
@@ -338,10 +404,11 @@ int main()
     auto fStartTime = chrono::high_resolution_clock::now(); //ед. измерения - микросекунды
     cout << '|' << FordFalkersonAlgorithm() << '|' << chrono::duration_cast<chrono::microseconds>( chrono::high_resolution_clock::now()- fStartTime).count() << '|' << nGenNumber + 2;
     RebuildNodes();
-    ClearPaths();
+    ClearDeque(Paths);
     fStartTime = chrono::high_resolution_clock::now();
-    cout << '|' << EdmondsKarpAlgorithm() << '|' << chrono::duration_cast<chrono::microseconds>( chrono::high_resolution_clock::now()- fStartTime).count();
-    deque<deque<int>> first_path_for_dinic(0, deque<int>(0));
-    first_path_for_dinic.push_back(SetId(aNodes[0][0].aId, 0));
-    GreedyDFS(first_path_for_dinic, aNodes);
+    cout << '|' << EdmondsKarpAlgorithm() << '|' << chrono::duration_cast<chrono::microseconds>( chrono::high_resolution_clock::now()- fStartTime).count() << '|';
+    RebuildNodes();
+    ClearDeque(Paths);
+    fStartTime = chrono::high_resolution_clock::now();
+    cout << EphimDinicAlgorithm() << '|' << chrono::duration_cast<chrono::microseconds>( chrono::high_resolution_clock::now()- fStartTime).count();
 }
