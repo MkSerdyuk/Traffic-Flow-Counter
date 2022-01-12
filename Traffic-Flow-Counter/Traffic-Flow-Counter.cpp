@@ -6,47 +6,47 @@
 #include <chrono>
 
 using namespace std;
-const int nMaxConnects = 3; //Максимальное количесвто связей к и от вершины
-const int nOneGenNodes = 3; //Количество вершин в поколении
-const int nGenNumber = 3; //Максимальное количество поколений
-const int nMaxFlow = 20; //Максимальное значение пропускной способности
-const int nPossibility = 100; //Чем больше, тем больше шанс, что появится ребро
+const long nMaxConnects = 3; //Максимальное количесвто связей к и от вершины
+const long nOneGenNodes = 3; //Количество вершин в поколении
+const long nGenNumber = 3; //Максимальное количество поколений
+const long nMaxFlow = 20; //Максимальное значение пропускной способности
+const long nPossibility = 100; //Чем больше, тем больше шанс, что появится ребро
 struct Node;
 struct Edge;
 
 struct Edge //Ребро
 {
-    int nFlow; //Максимальный транспортный поток
-    int nFlowLeft; //Остаточный поток
-    int aEndId[2]; //Id конечной вершины
+    long nFlow; //Максимальный транспортный поток
+    long nFlowLeft; //Остаточный поток
+    long aEndId[2]; //Id конечной вершины
     bool bBlocked;
 };
 
 struct Node //Вершина
 {
-    int aId[2]; //Индивидуальный номер вершины
+    long aId[2]; //Индивидуальный номер вершины
     Edge aNext[nMaxConnects]; //Ребра идущие от вершины
 };
 
-int seed = 1;
+long seed = 1;
 Node aNodes[nGenNumber + 2][nOneGenNodes]; //Массив хранящий все вершины
-deque<deque<deque<int>>> Paths(0, deque<deque<int>> (0, deque<int>(0))); //пути найденные поиском в ширину
-deque<deque<deque<int>>> SortedPaths(0, deque<deque<int>> (0, deque<int>(0))); //пути найденные поиском в ширину
-deque<deque<deque<int>>> BlockingPaths(0, deque<deque<int>> (0, deque<int>(0))); //пути найденные поиском в глубину для алгоритма ефима-диница
+deque<deque<deque<long>>> Paths(0, deque<deque<long>> (0, deque<long>(0))); //пути найденные поиском в ширину
+deque<deque<deque<long>>> SortedPaths(0, deque<deque<long>> (0, deque<long>(0))); //пути найденные поиском в ширину
+deque<deque<deque<long>>> BlockingPaths(0, deque<deque<long>> (0, deque<long>(0))); //пути найденные поиском в глубину для алгоритма ефима-диница
 
-int Random(int limit)
+long Random(long limit)
 {
     seed = seed/13*21+time(0);
     srand(seed);
     return rand() % limit;
 }
 
-void ConnectNode(Node &vCurrent, int nNextGen) //Соединяем вершину с дргуими
+void ConnectNode(Node &vCurrent, long nNextGen) //Соединяем вершину с дргуими
 {
-    int nCounter = 0;
-    int nRemember = nNextGen;
+    long nCounter = 0;
+    long nRemember = nNextGen;
     if (nRemember <= nGenNumber + 1) {
-        for (int i1 = 0; i1 < nOneGenNodes; i1++) {
+        for (long i1 = 0; i1 < nOneGenNodes; i1++) {
             nNextGen = nRemember + Random(nGenNumber + 2 - nRemember);
             if ((Random(nPossibility) != 0) && nCounter <= nMaxConnects - 1) {
                 if (aNodes[nNextGen - 1][i1].aId[0] == 0) {
@@ -67,11 +67,11 @@ void ConnectNode(Node &vCurrent, int nNextGen) //Соединяем вершин
 
 void RebuildNodes() //восстанавливаем остаточные пропускные способности
 {
-    for (int i1 = 0; i1 < nGenNumber+2; i1++)
+    for (long i1 = 0; i1 < nGenNumber+2; i1++)
     {
-        for (int i2 = 0; i2 < nOneGenNodes; i2++)
+        for (long i2 = 0; i2 < nOneGenNodes; i2++)
         {
-            for (int i3 = 0; i3 < nMaxConnects; i3++)
+            for (long i3 = 0; i3 < nMaxConnects; i3++)
             {
                 aNodes[i1][i2].aNext[i3].nFlowLeft = aNodes[i1][i2].aNext[i3].nFlow;
             }
@@ -79,7 +79,7 @@ void RebuildNodes() //восстанавливаем остаточные про
     }
 }
 
-int FordFalkersonAlgorithm();
+long FordFalkersonAlgorithm();
 
 void OutputEdge(Edge eEdge)
 {
@@ -96,7 +96,7 @@ void OutputEdge(Edge eEdge)
 
 void OutputEdges(Edge eEdges[])
 {
-    for (int i = 0; i < nMaxConnects; i++)
+    for (long i = 0; i < nMaxConnects; i++)
     {
         if (eEdges[i].nFlow != 0)
         {
@@ -117,9 +117,9 @@ void OutputNode(Node nNode)
 
 void OutputNodes()
 {
-    for (int i1 = 0; i1 < nGenNumber + 2; i1++)
+    for (long i1 = 0; i1 < nGenNumber + 2; i1++)
     {
-        for (int i2 = 0; i2 < nOneGenNodes; i2++)
+        for (long i2 = 0; i2 < nOneGenNodes; i2++)
         {
             if (aNodes[i1][i2].aId[0] != 0)
             {
@@ -146,30 +146,30 @@ void Output() //Вывод сети для отрисовки
     OutputNodes();
 }
 
-deque<int> SetId(int aId[2], int nEdgeNum) //создание deque с Id
+deque<long> SetId(long aId[2], long nEdgeNum) //создание deque с Id
 {
-    deque<int> result(0);
+    deque<long> result(0);
     result.push_back(aId[0]);
     result.push_back(aId[1]);
     result.push_back(nEdgeNum);
     return result;
 }
 
-void CopyPath(deque<deque<int>> original, deque<deque<int>> &copy) //копирование пути
+void CopyPath(deque<deque<long>> original, deque<deque<long>> &copy) //копирование пути
 {
-    for (int i = 0; i < original.size(); i++)
+    for (long i = 0; i < original.size(); i++)
     {
         copy.push_back(original[i]);
     }
 
 }
 
- void BFS(deque<deque<int>> &currentPath, Node currentNetwork[nGenNumber + 2][nOneGenNodes]) //поиск в ширину всех путей в графе
+ void BFS(deque<deque<long>> &currentPath, Node currentNetwork[nGenNumber + 2][nOneGenNodes]) //поиск в ширину всех путей в графе
 {
     bool bConnected = false;
-    deque<deque<int>> memorizedPath (0, deque<int>(0));
+    deque<deque<long>> memorizedPath (0, deque<long>(0));
     Node* currentNode = &currentNetwork[currentPath[currentPath.size() - 1][0] - 1][currentPath[currentPath.size() - 1][1] - 1];
-    for (int i = 0; i < nMaxConnects; i++)
+    for (long i = 0; i < nMaxConnects; i++)
     {
        if (currentNode->aNext[i].aEndId[0] != 0)
         {
@@ -190,16 +190,16 @@ void CopyPath(deque<deque<int>> original, deque<deque<int>> &copy) //копир�
     }
 }
 
-void ModifiedBFS(deque<deque<int>> currentPath, Node currentNetwork[nGenNumber + 2][nOneGenNodes]) //поиск в ширину всех путей в графе (модифицирован для алгоритма Эдмондса-Карпа)
+void ModifiedBFS(deque<deque<long>> currentPath, Node currentNetwork[nGenNumber + 2][nOneGenNodes]) //поиск в ширину всех путей в графе (модифицирован для алгоритма Эдмондса-Карпа)
 {
     bool bConnected = false;
-    deque<deque<int>> memorizedPath (0, deque<int>(0));
+    deque<deque<long>> memorizedPath (0, deque<long>(0));
     Node* currentNode = &currentNetwork[currentPath[currentPath.size() - 1][0] - 1][currentPath[currentPath.size() - 1][1] - 1];
     if (currentNode->aId[0] == nGenNumber + 2)
     {
         SortedPaths.push_back(currentPath); //таким образом получем пути, упорядоченные по длине
     }
-    for (int i = 0; i < nMaxConnects; i++)
+    for (long i = 0; i < nMaxConnects; i++)
     {
         if (currentNode->aNext[i].aEndId[0] != 0)
         {
@@ -220,10 +220,10 @@ void ModifiedBFS(deque<deque<int>> currentPath, Node currentNetwork[nGenNumber +
     }
 }
 
-int IsIncreasing(deque<deque<int>> currentPath) //проверка на увеличивающий путь и возвращение максимального потока в сети
+long IsIncreasing(deque<deque<long>> currentPath) //проверка на увеличивающий путь и возвращение максимального потока в сети
 {
-    int result = nMaxFlow;
-    for (int i = 0; i < currentPath.size() - 1; i++)
+    long result = nMaxFlow;
+    for (long i = 0; i < currentPath.size() - 1; i++)
     {
         if (aNodes[currentPath[i][0] - 1][currentPath[i][1] - 1].aNext[currentPath[i+1][2]].nFlowLeft < result)
         {
@@ -233,12 +233,12 @@ int IsIncreasing(deque<deque<int>> currentPath) //проверка на увел
     return result;
 }
 
-int IncreaseFlow(deque<deque<int>> currentPath) //увеличние потока в данном пути
+long IncreaseFlow(deque<deque<long>> currentPath) //увеличние потока в данном пути
 {
-    int nMaxFlowLeft = IsIncreasing(currentPath);
+    long nMaxFlowLeft = IsIncreasing(currentPath);
     if (nMaxFlowLeft > 0)
     {
-        for (int i = 0; i < currentPath.size() - 1; i++)
+        for (long i = 0; i < currentPath.size() - 1; i++)
         {
             aNodes[currentPath[i][0] - 1][currentPath[i][1] - 1].aNext[currentPath[i+1][2]].nFlowLeft = aNodes[currentPath[i][0] - 1][currentPath[i][1] - 1].aNext[currentPath[i+1][2]].nFlowLeft - nMaxFlowLeft;
         }
@@ -246,28 +246,28 @@ int IncreaseFlow(deque<deque<int>> currentPath) //увеличние поток�
     return nMaxFlowLeft;
 }
 
-int FordFalkersonCore(deque<deque<deque<int>>> usedPaths)
+long FordFalkersonCore(deque<deque<deque<long>>> usedPaths)
 {
-    int result = 0;
-    for (int i = 0; i < usedPaths.size(); i++)
+    long result = 0;
+    for (long i = 0; i < usedPaths.size(); i++)
     {
         result += IncreaseFlow(usedPaths[i]);;
     }
     return result;
 }
 
-int FordFalkersonAlgorithm()
+long FordFalkersonAlgorithm()
 {
-    deque<deque<int>> first_path(0, deque<int>(0));
+    deque<deque<long>> first_path(0, deque<long>(0));
     first_path.push_back(SetId(aNodes[0][0].aId, 0));
     Paths.push_back(first_path);
     BFS(Paths[0], aNodes);
     return FordFalkersonCore(Paths);
 }
 
-int EdmondsKarpAlgorithm() //отличие от алгортма Форда-Фалкерсона в нахождении кратчайших увеличивающих путей
+long EdmondsKarpAlgorithm() //отличие от алгортма Форда-Фалкерсона в нахождении кратчайших увеличивающих путей
 {
-    deque<deque<int>> first_path(0, deque<int>(0));
+    deque<deque<long>> first_path(0, deque<long>(0));
     first_path.push_back(SetId(aNodes[0][0].aId, 0));
     Paths.push_back(first_path);
     ModifiedBFS(Paths[0], aNodes);
@@ -283,12 +283,12 @@ void UnblockEdges()
             blockedEdges.pop_front();
     }
 }
-void GreedyDFS(deque<deque<int>> &currentPath, Node currentNetwork[nGenNumber + 2][nOneGenNodes]) //"Жадный" поиск в глубину всех путей в графе
+void GreedyDFS(deque<deque<long>> &currentPath, Node currentNetwork[nGenNumber + 2][nOneGenNodes]) //"Жадный" поиск в глубину всех путей в графе
 {
     Node* currentNode = &currentNetwork[currentPath[currentPath.size() - 1][0] - 1][currentPath[currentPath.size() - 1][1] - 1];
     if(currentNode->aId[0] != nGenNumber + 2)
     {
-        for (int i = 0; i < nMaxConnects; i++)
+        for (long i = 0; i < nMaxConnects; i++)
         {
             if (currentNode->aNext[i].aEndId[0] != 0 && currentNode->aNext[i].nFlowLeft != 0 && !currentNode->aNext[i].bBlocked)
             {
@@ -316,13 +316,13 @@ void GreedyDFS(deque<deque<int>> &currentPath, Node currentNetwork[nGenNumber + 
     /*if (currentNode->aId[0] == nGenNumber + 2)
     {
         BlockingPaths.push_back(currentPath);
-        deque<deque<int>> newPath(0, deque<int>(0));
+        deque<deque<long>> newPath(0, deque<long>(0));
         newPath.push_back(SetId(aNodes[0][0].aId, 0));
         GreedyDFS(newPath, currentNetwork);
     }
     else
     {
-            for (int i = 0; i < nMaxConnects; i++)
+            for (long i = 0; i < nMaxConnects; i++)
             {
                 if (currentNode->aNext[i].aEndId[0] != 0 && currentNode->aNext[i].nFlowLeft != 0 && !currentNode->aNext[i].bBlocked)
                 {
@@ -336,10 +336,10 @@ void GreedyDFS(deque<deque<int>> &currentPath, Node currentNetwork[nGenNumber + 
     }*/
 }
 
-int EphimDinicAlgorithm()
+long EphimDinicAlgorithm()
 {
-    int result = 0;
-    deque<deque<int>> first_path(0, deque<int>(0));
+    long result = 0;
+    deque<deque<long>> first_path(0, deque<long>(0));
     first_path.push_back(SetId(aNodes[0][0].aId, 0));
     bool stop = false;
     do
@@ -358,7 +358,7 @@ int EphimDinicAlgorithm()
             }
             BlockingPaths.pop_front();
         }
-        for (int i = 0; i < nMaxConnects; i++)
+        for (long i = 0; i < nMaxConnects; i++)
         {
             if(!stop)
             {
@@ -389,7 +389,7 @@ int main()
     ConnectNode(aNodes[0][0], 2);
     aNodes[nGenNumber + 1][0].aId[0] = nGenNumber + 2;
     aNodes[nGenNumber + 1][0].aId[1] = 1;
-    for (int i1 = 0; i1 <= nOneGenNodes - 1; i1++)
+    for (long i1 = 0; i1 <= nOneGenNodes - 1; i1++)
     {
         aNodes[nGenNumber][i1].aNext[0].nFlowLeft = 0;
         if (aNodes[nGenNumber][i1].aId[0] != 0)
