@@ -46,8 +46,17 @@
 
 ###	Результаты сравнения
 
-Были произведены 100 запусков программы. Генерировалась сеть с примерно 100 вершин, от каждой из которых исходило по 10 ребер. 
-Алгоритмы работали со следующими скоростями:
+Были произведены 100 запусков программы  и измерено время работы для графов 2-х форм (представленные ниже графы являются их уменьшенными копиями).
+
+#### Граф "А"
+
+![Graph-A](https://github.com/MkSerdyuk/Traffic-Flow-Counter/blob/Ephim-Dinic-Algorithm/Graph-A.png) 
+
+![Время работы](https://github.com/MkSerdyuk/Traffic-Flow-Counter/blob/Ephim-Dinic-Algorithm/RESULTS2.png)
+
+#### Граф "Б"
+
+![Graph-B](https://github.com/MkSerdyuk/Traffic-Flow-Counter/blob/Ephim-Dinic-Algorithm/Graph-B.png) 
 
 ![Время работы](https://github.com/MkSerdyuk/Traffic-Flow-Counter/blob/Ephim-Dinic-Algorithm/RESULTS.png)
 
@@ -68,3 +77,5 @@
 	
 	-  E*V = сложность поиска блокирующего потока
 	-  V, т.к. всего будет V повторений
+	
+	
